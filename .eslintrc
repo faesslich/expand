@@ -1,0 +1,15 @@
+{
+    "env": {
+        "es6": true
+    },
+    "extends": "airbnb-base/legacy",
+    "parser": "babel-eslint",
+    "parserOptions": {
+        "ecmaVersion":  6,
+        "sourceType": "module"
+    },
+    "rules": {
+        "no-use-before-define": OFF,
+        "max-len": [1, {"code": 120, "tabWidth": 2, "ignoreUrls": true}]
+    }
+}

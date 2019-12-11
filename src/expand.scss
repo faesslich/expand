@@ -1,0 +1,10 @@
+.expand-js {
+  &.-hidden { overflow: hidden; }
+  &.-rtl { direction: rtl; }
+
+  &--item {
+    float: left;
+
+    &.f-right { float: right; }
+  }
+}

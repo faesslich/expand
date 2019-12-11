@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Hallo</title>
+</head>
+<body>
+
+<div class="slider">
+    <div>1dsdadad sad asdasdsad as dasd asd </div>
+    <div>2dsdadad sad asdasdsad as dasd asd </div>
+    <div>3dsdadad sad asdasdsad as dasd asd </div>
+    <div>4dsdadad sad asdasdsad as dasd asd </div>
+</div>
+<link rel="stylesheet" href="../dist/expand.min.css" />
+<script type="module">
+  import Expand from '../src/expand.js';
+
+  const Slider = new Expand({
+    selector: '.slider',
+    duration: 300,
+    easeMode: 'ease-out',
+    useCssFile: 1,
+    visibleSlides: {
+      768: 2,
+      1023: 3,
+      1279: 4
+    },
+    startIndex: 2,
+    draggable: true,
+    multipleDrag: true,
+    triggerDistance: 30,
+    rtl: false,
+    loop: true
+  });
+</script>
+</body>
+</html>
