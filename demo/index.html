@@ -4,35 +4,100 @@
     <meta charset="utf-8">
     <title>Hallo</title>
 </head>
-<body>
+<body class="demo">
 
-<div class="slider">
-    <div>1dsdadad sad asdasdsad as dasd asd </div>
-    <div>2dsdadad sad asdasdsad as dasd asd </div>
-    <div>3dsdadad sad asdasdsad as dasd asd </div>
-    <div>4dsdadad sad asdasdsad as dasd asd </div>
+<div class="slider-wrapper">
+    <div class="slider">
+        <div>1</div>
+        <div>2</div>
+        <div>3</div>
+        <div>4</div>
+        <div>5</div>
+        <div>6</div>
+        <div>7</div>
+        <div>8</div>
+        <div>9</div>
+    </div>
 </div>
+<div class="slider-wrapper">
+    <div class="slider2">
+        <div>1</div>
+        <div>2</div>
+        <div>3</div>
+        <div>4</div>
+    </div>
+</div>
+<div class="slider-wrapper">
+    <div class="slider">
+        <div>1</div>
+        <div>2</div>
+        <div>3</div>
+        <div>4</div>
+        <div>5</div>
+        <div>6</div>
+    </div>
+</div>
+<div class="slider-wrapper">
+    <div class="slider2">
+        <div>1</div>
+        <div>2</div>
+        <div>3</div>
+        <div>4</div>
+    </div>
+</div>
+
 <link rel="stylesheet" href="../dist/expand.min.css" />
+<link rel="stylesheet" href="assets/demo.min.css" />
 <script type="module">
   import Expand from '../src/expand.js';
 
-  const Slider = new Expand({
-    selector: '.slider',
-    duration: 300,
-    easeMode: 'ease-out',
-    useCssFile: 1,
-    visibleSlides: {
-      768: 2,
-      1023: 3,
-      1279: 4
-    },
-    startIndex: 2,
-    draggable: true,
-    multipleDrag: true,
-    triggerDistance: 30,
-    rtl: false,
-    loop: true
+  let forEach = function (array, callback, scope) {
+    for (let i = 0; i < array.length; i++) {
+      callback.call(scope, i, array[i]);
+    }
+  };
+
+  let sliders = document.querySelectorAll('.slider');
+  forEach(sliders, function (index, value) {
+    const slider = new Expand({
+      selector: value,
+      duration: 300,
+      easeMode: 'ease-out',
+      useCssFile: 1,
+      visibleSlides: {
+        100: 1,
+        768: 2
+      },
+      startIndex: 0,
+      draggable: true,
+      multipleDrag: true,
+      triggerDistance: 30,
+      rtl: false,
+      loop: true
+    });
   });
+
+  let sliders2 = document.querySelectorAll('.slider2');
+  forEach(sliders2, function (index, value) {
+    const slider2 = new Expand({
+      selector: value,
+      duration: 300,
+      easeMode: 'ease-out',
+      useCssFile: 1,
+      visibleSlides: {
+        100: 2,
+        768: 3
+      },
+      startIndex: 0,
+      draggable: true,
+      multipleDrag: true,
+      triggerDistance: 30,
+      rtl: false,
+      loop: true
+    });
+  });
+
+
 </script>
 </body>
 </html>
