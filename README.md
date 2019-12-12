@@ -1,6 +1,6 @@
 # Expand - the lightweight pure JS carousel/slider
 
-Full docscoming soon
+Full docs coming soon
 
 
 ## Browser support
