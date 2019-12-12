@@ -152,8 +152,10 @@ function () {
   /**
    * Overrides default settings with custom ones.
    * @param options
-   * @returns {{useCssFile, onChange, cssCustomPath, triggerDistance, rtl, duration,
-   * startIndex, multipleDrag, draggable, easeMode, onInit, loop, selector, visibleSlides}}
+   * @returns {{
+   *    useCssFile, onChange, cssCustomPath, triggerDistance, rtl, duration, startIndex,
+   *    multipleDrag, draggable, easeMode, onInit, loop, selector, visibleSlides
+   *  }}
    */
 
 
