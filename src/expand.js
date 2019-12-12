@@ -1,6 +1,7 @@
 export default class Expand {
   /**
    * Constructor
+   * @param options
    */
   constructor(options) {
     const eventHandlers = [
@@ -38,6 +39,9 @@ export default class Expand {
 
   /**
    * Overrides default settings with custom ones.
+   * @param options
+   * @returns {{useCssFile, onChange, cssCustomPath, triggerDistance, rtl, duration,
+   * startIndex, multipleDrag, draggable, easeMode, onInit, loop, selector, visibleSlides}}
    */
   static settingsOverride(options) {
     const settings = {
@@ -158,6 +162,11 @@ export default class Expand {
     this.slideToCurrent();
   }
 
+  /**
+   * Slider item creation
+   * @param item
+   * @returns {*}
+   */
   createSliderItem(item) {
     const itemContainer = document.createElement('div');
     if (this.config.useCssFile) {
@@ -198,6 +207,7 @@ export default class Expand {
 
   /**
    * Previous slide
+   * @param countSlides
    */
   prevSlide(countSlides = 1) {
     // early return if no slides
@@ -236,6 +246,7 @@ export default class Expand {
 
   /**
    * Next slide
+   * @param countSlides
    */
   nextSlide(countSlides = 1) {
     // early return when there is nothing to slide
@@ -292,6 +303,7 @@ export default class Expand {
 
   /**
    * Go to specific slide method
+   * @param index
    */
   goToSlide(index) {
     if (this.innerItems.length <= this.visibleSlides) {
@@ -311,6 +323,7 @@ export default class Expand {
 
   /**
    * Jump to active slide
+   * @param isTransition
    */
   slideToCurrent(isTransition) {
     const curSlide = this.config.loop ? this.curSlide + this.visibleSlides : this.curSlide;
@@ -367,7 +380,6 @@ export default class Expand {
     this.sliderContainerCreate();
   }
 
-
   stopDragging() {
     this.drag = {
       startXAxis: 0,
@@ -381,6 +393,7 @@ export default class Expand {
 
   /**
    * Remove item method
+   * @param index
    */
   remove(index) {
     const lowerIndex = index < this.curSlide;
@@ -399,6 +412,8 @@ export default class Expand {
 
   /**
    * Insert item method
+   * @param item
+   * @param index
    */
   insert(item, index) {
     this.innerItems.splice(index, 0, item);
@@ -408,6 +423,7 @@ export default class Expand {
 
   /**
    * Prepend item method
+   * @param item
    */
   prepend(item) {
     this.insert(item, 0);
@@ -416,6 +432,7 @@ export default class Expand {
 
   /**
    * Append item method
+   * @param item
    */
   append(item) {
     this.insert(item, this.innerItems.length + 1);
@@ -553,6 +570,7 @@ export default class Expand {
 
   /**
    * destroy method
+   * @param restore
    */
   destroy(restore = false) {
     // remove listeners

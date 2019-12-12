@@ -128,6 +128,7 @@ var Expand =
 function () {
   /**
    * Constructor
+   * @param options
    */
   function Expand(options) {
     var _this = this;
@@ -150,6 +151,9 @@ function () {
   }
   /**
    * Overrides default settings with custom ones.
+   * @param options
+   * @returns {{useCssFile, onChange, cssCustomPath, triggerDistance, rtl, duration,
+   * startIndex, multipleDrag, draggable, easeMode, onInit, loop, selector, visibleSlides}}
    */
 
 
@@ -253,6 +257,12 @@ function () {
 
       this.slideToCurrent();
     }
+    /**
+     * Slider item creation
+     * @param item
+     * @returns {*}
+     */
+
   }, {
     key: "createSliderItem",
     value: function createSliderItem(item) {
@@ -296,6 +306,7 @@ function () {
     }
     /**
      * Previous slide
+     * @param countSlides
      */
 
   }, {
@@ -336,6 +347,7 @@ function () {
     }
     /**
      * Next slide
+     * @param countSlides
      */
 
   }, {
@@ -396,6 +408,7 @@ function () {
     }
     /**
      * Go to specific slide method
+     * @param index
      */
 
   }, {
@@ -415,6 +428,7 @@ function () {
     }
     /**
      * Jump to active slide
+     * @param isTransition
      */
 
   }, {
@@ -487,6 +501,7 @@ function () {
     }
     /**
      * Remove item method
+     * @param index
      */
 
   }, {
@@ -505,6 +520,8 @@ function () {
     }
     /**
      * Insert item method
+     * @param item
+     * @param index
      */
 
   }, {
@@ -515,6 +532,7 @@ function () {
     }
     /**
      * Prepend item method
+     * @param item
      */
 
   }, {
@@ -524,6 +542,7 @@ function () {
     }
     /**
      * Append item method
+     * @param item
      */
 
   }, {
@@ -674,6 +693,7 @@ function () {
     }
     /**
      * destroy method
+     * @param restore
      */
 
   }, {
