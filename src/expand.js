@@ -5,14 +5,14 @@ export default class Expand {
   constructor(options) {
     const eventHandlers = [
       'resizeHandler',
+      'clickHandler',
       'touchstartHandler',
       'touchendHandler',
       'touchmoveHandler',
       'mousedownHandler',
       'mouseupHandler',
       'mouseleaveHandler',
-      'mousemoveHandler',
-      'clickHandler'
+      'mousemoveHandler'
     ];
 
     this.config = Expand.settingsOverride(options);
@@ -32,10 +32,7 @@ export default class Expand {
       this[method] = this[method].bind(this);
     });
 
-    // update visibleSlides number dependable of user value
     this.slidesAmount();
-
-    // Init method
     this.init();
   }
 
@@ -68,9 +65,6 @@ export default class Expand {
    * Attaches listeners to required events.
    */
   attachEvents() {
-    // Resize element on window resize
-    window.addEventListener('resize', this.resizeHandler);
-
     // If element is draggable / swipable
     if (this.config.draggable) {
       this.pointerDown = false;
@@ -84,6 +78,7 @@ export default class Expand {
       };
 
       // add event handlers
+      window.addEventListener('resize', this.resizeHandler);
       this.selector.addEventListener('click', this.clickHandler);
       this.selector.addEventListener('touchstart', this.touchstartHandler);
       this.selector.addEventListener('touchend', this.touchendHandler);
@@ -125,13 +120,12 @@ export default class Expand {
    */
   sliderContainerCreate() {
     const widthItem = this.selectorWidth / this.visibleSlides;
-    const itemCreateAmount =
-      this.config.loop ? this.innerItems.length + (2 * this.visibleSlides) : this.innerItems.length;
+    const itemWidthCalc = this.config.loop ? (2 * this.visibleSlides) + this.innerItems.length : this.innerItems.length;
 
     // Create frame and apply styling
     this.slideItem = document.createElement('div');
     this.slideItem.classList.add('expand-js--container');
-    this.slideItem.style.width = `${widthItem * itemCreateAmount}px`;
+    this.slideItem.style.width = `${widthItem * itemWidthCalc}px`;
     this.isTransition();
 
     // Create a document fragment to put slides into it
@@ -177,7 +171,6 @@ export default class Expand {
       itemContainer.style.cssFloat = this.config.rtl ? 'right' : 'left';
     }
 
-
     itemContainer.style.width = `${this.config.loop
       ? 100 / (this.innerItems.length + (this.visibleSlides * 2))
       : 100 / (this.innerItems.length)}%`;
@@ -187,7 +180,7 @@ export default class Expand {
 
 
   /**
-   * Determinates slides number accordingly to clients viewport.
+   * sets amount of visible slides based on viewport (fixed number or object value for responsive changes)
    */
   slidesAmount() {
     if (typeof this.config.visibleSlides === 'number') {
@@ -204,31 +197,29 @@ export default class Expand {
 
 
   /**
-   * Go to previous slide.
+   * Previous slide
    */
   prevSlide(countSlides = 1) {
-    // early return when there is nothing to slide
+    // early return if no slides
     if (this.innerItems.length <= this.visibleSlides) {
       return;
     }
 
-    const beforeChange = this.curSlide;
+    const curSlideCheck = this.curSlide;
 
     if (this.config.loop) {
-      const isNewIndexClone = this.curSlide - countSlides < 0;
-      if (isNewIndexClone) {
-        this.isNotTransition();
-
-        const mirrorSlideIndex = this.curSlide + this.innerItems.length;
-        const mirrorSlideIndexOffset = this.visibleSlides;
-        const moveTo = mirrorSlideIndex + mirrorSlideIndexOffset;
-        const offset =
-          (this.config.rtl ? 1 : -1) * moveTo * (this.selectorWidth / this.visibleSlides);
-
+      const isCloneSlide = this.curSlide - countSlides < 0;
+      if (isCloneSlide) {
+        const cloneIndex = this.curSlide + this.innerItems.length;
+        const cloneIndexOffset = this.visibleSlides;
+        const newPos = cloneIndex + cloneIndexOffset;
+        const offset = (this.config.rtl ? 1 : -1) * newPos * (this.selectorWidth / this.visibleSlides);
         const dragDistance = this.config.draggable ? this.drag.endXAxis - this.drag.startXAxis : 0;
 
+        this.isNotTransition();
+
         this.slideItem.style.transform = `translate3d(${offset + dragDistance}px, 0, 0)`;
-        this.curSlide = mirrorSlideIndex - countSlides;
+        this.curSlide = cloneIndex - countSlides;
       } else {
         this.curSlide -= countSlides;
       }
@@ -236,7 +227,7 @@ export default class Expand {
       this.curSlide = Math.max(this.curSlide - countSlides, 0);
     }
 
-    if (beforeChange !== this.curSlide) {
+    if (curSlideCheck !== this.curSlide) {
       this.slideToCurrent(this.config.loop);
       this.config.onChange.call(this);
     }
@@ -244,7 +235,7 @@ export default class Expand {
 
 
   /**
-   * Go to next slide.
+   * Next slide
    */
   nextSlide(countSlides = 1) {
     // early return when there is nothing to slide
@@ -252,32 +243,29 @@ export default class Expand {
       return;
     }
 
-    const beforeChange = this.curSlide;
+    const curSlideCheck = this.curSlide;
 
     if (this.config.loop) {
-      const isNewIndexClone = (this.curSlide + countSlides) > (this.innerItems.length - this.visibleSlides);
+      const isCloneSlide = (this.curSlide + countSlides) > (this.innerItems.length - this.visibleSlides);
 
-      if (isNewIndexClone) {
+      if (isCloneSlide) {
         this.isNotTransition();
 
-        const mirrorSlideIndex = this.curSlide - this.innerItems.length;
-        const mirrorSlideIndexOffset = this.visibleSlides;
-        const moveTo = mirrorSlideIndex + mirrorSlideIndexOffset;
-        const offset =
-          (this.config.rtl ? 1 : -1) * moveTo * (this.selectorWidth / this.visibleSlides);
-
+        const cloneIndex = this.curSlide - this.innerItems.length;
+        const cloneIndexOffset = this.visibleSlides;
+        const newPos = cloneIndex + cloneIndexOffset;
+        const offset = (this.config.rtl ? 1 : -1) * newPos * (this.selectorWidth / this.visibleSlides);
         const dragDistance = this.config.draggable ? this.drag.endXAxis - this.drag.startXAxis : 0;
 
         this.slideItem.style.transform = `translate3d(${offset + dragDistance}px, 0, 0)`;
-        this.curSlide = mirrorSlideIndex + countSlides;
+        this.curSlide = cloneIndex + countSlides;
       } else {
         this.curSlide += countSlides;
       }
     } else {
-      this.curSlide =
-        Math.min(this.curSlide + countSlides, this.innerItems.length - this.visibleSlides);
+      this.curSlide = Math.min(this.curSlide + countSlides, this.innerItems.length - this.visibleSlides);
     }
-    if (beforeChange !== this.curSlide) {
+    if (curSlideCheck !== this.curSlide) {
       this.slideToCurrent(this.config.loop);
       this.config.onChange.call(this);
     }
@@ -303,17 +291,18 @@ export default class Expand {
 
 
   /**
-   * Go to slide with particular index
+   * Go to specific slide method
    */
   goToSlide(index) {
     if (this.innerItems.length <= this.visibleSlides) {
       return;
     }
-    const beforeChange = this.curSlide;
+    const curSlideCheck = this.curSlide;
     this.curSlide = this.config.loop ?
       index % this.innerItems.length :
       Math.min(Math.max(index, 0), this.innerItems.length - this.visibleSlides);
-    if (beforeChange !== this.curSlide) {
+
+    if (curSlideCheck !== this.curSlide) {
       this.slideToCurrent();
       this.config.onChange.call(this);
     }
@@ -321,12 +310,11 @@ export default class Expand {
 
 
   /**
-   * Moves sliders frame to position of currently active slide
+   * Jump to active slide
    */
   slideToCurrent(isTransition) {
     const curSlide = this.config.loop ? this.curSlide + this.visibleSlides : this.curSlide;
-    const offset =
-      (this.config.rtl ? 1 : -1) * curSlide * (this.selectorWidth / this.visibleSlides);
+    const offset = (this.config.rtl ? 1 : -1) * curSlide * (this.selectorWidth / this.visibleSlides);
 
     if (isTransition) {
       requestAnimationFrame(() => {
@@ -342,7 +330,7 @@ export default class Expand {
 
 
   /**
-   * Recalculate drag /swipe event and reposition the frame of a slider
+   * Get new position after dragging
    */
   updateAfterDrag() {
     const movement = (this.config.rtl ? -1 : 1) * (this.drag.endXAxis - this.drag.startXAxis);
@@ -380,9 +368,6 @@ export default class Expand {
   }
 
 
-  /**
-   * Clear drag after touchend and mouseup event
-   */
   stopDragging() {
     this.drag = {
       startXAxis: 0,
@@ -395,7 +380,7 @@ export default class Expand {
 
 
   /**
-   * Remove item from carousel.
+   * Remove item method
    */
   remove(index) {
     const lowerIndex = index < this.curSlide;
@@ -413,7 +398,7 @@ export default class Expand {
 
 
   /**
-   * Insert item to carousel at particular index.
+   * Insert item method
    */
   insert(item, index) {
     this.innerItems.splice(index, 0, item);
@@ -422,7 +407,7 @@ export default class Expand {
 
 
   /**
-   * Prepend item to carousel.
+   * Prepend item method
    */
   prepend(item) {
     this.insert(item, 0);
@@ -430,7 +415,7 @@ export default class Expand {
 
 
   /**
-   * Append item to carousel.
+   * Append item method
    */
   append(item) {
     this.insert(item, this.innerItems.length + 1);
@@ -566,11 +551,11 @@ export default class Expand {
     }
   }
 
-
   /**
-   * Removes listeners and optionally restores to initial markup
+   * destroy method
    */
-  destroy(restoreMarkup = false) {
+  destroy(restore = false) {
+    // remove listeners
     window.removeEventListener('resize', this.resizeHandler);
     this.selector.removeEventListener('click', this.clickHandler);
     this.selector.removeEventListener('mouseup', this.mouseupHandler);
@@ -581,7 +566,8 @@ export default class Expand {
     this.selector.removeEventListener('touchend', this.touchendHandler);
     this.selector.removeEventListener('touchmove', this.touchmoveHandler);
 
-    if (restoreMarkup) {
+    // restore to initial markup
+    if (restore) {
       const slides = document.createDocumentFragment();
       for (let i = 0; i < this.innerItems.length; i += 1) {
         slides.appendChild(this.innerItems[i]);

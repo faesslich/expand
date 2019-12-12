@@ -134,14 +134,9 @@ function () {
 
     _classCallCheck(this, Expand);
 
-    var eventHandlers = ['resizeHandler', 'touchstartHandler', 'touchendHandler', 'touchmoveHandler', 'mousedownHandler', 'mouseupHandler', 'mouseleaveHandler', 'mousemoveHandler', 'clickHandler'];
+    var eventHandlers = ['resizeHandler', 'clickHandler', 'touchstartHandler', 'touchendHandler', 'touchmoveHandler', 'mousedownHandler', 'mouseupHandler', 'mouseleaveHandler', 'mousemoveHandler'];
     this.config = Expand.settingsOverride(options);
-    this.selector = typeof this.config.selector === 'string' ? document.querySelector(this.config.selector) : this.config.selector;
-
-    if (this.selector === null) {
-      throw new Error('Used selector doesn\'t exist');
-    } // Create global references
-
+    this.selector = typeof this.config.selector === 'string' ? document.querySelector(this.config.selector) : this.config.selector; // Create global references
 
     this.selectorWidth = this.selector.offsetWidth;
     this.innerItems = [].slice.call(this.selector.children);
@@ -149,10 +144,8 @@ function () {
 
     eventHandlers.forEach(function (method) {
       _this[method] = _this[method].bind(_this);
-    }); // update visibleSlides number dependable of user value
-
-    this.slidesAmount(); // Init method
-
+    });
+    this.slidesAmount();
     this.init();
   }
   /**
@@ -167,9 +160,7 @@ function () {
      * Attaches listeners to required events.
      */
     value: function attachEvents() {
-      // Resize element on window resize
-      window.addEventListener('resize', this.resizeHandler); // If element is draggable / swipable
-
+      // If element is draggable / swipable
       if (this.config.draggable) {
         this.pointerDown = false;
         this.drag = {
@@ -181,6 +172,7 @@ function () {
           preventClick: false
         }; // add event handlers
 
+        window.addEventListener('resize', this.resizeHandler);
         this.selector.addEventListener('click', this.clickHandler);
         this.selector.addEventListener('touchstart', this.touchstartHandler);
         this.selector.addEventListener('touchend', this.touchendHandler);
@@ -224,11 +216,11 @@ function () {
     key: "sliderContainerCreate",
     value: function sliderContainerCreate() {
       var widthItem = this.selectorWidth / this.visibleSlides;
-      var itemCreateAmount = this.config.loop ? this.innerItems.length + 2 * this.visibleSlides : this.innerItems.length; // Create frame and apply styling
+      var itemWidthCalc = this.config.loop ? 2 * this.visibleSlides + this.innerItems.length : this.innerItems.length; // Create frame and apply styling
 
       this.slideItem = document.createElement('div');
       this.slideItem.classList.add('expand-js--container');
-      this.slideItem.style.width = "".concat(widthItem * itemCreateAmount, "px");
+      this.slideItem.style.width = "".concat(widthItem * itemWidthCalc, "px");
       this.isTransition(); // Create a document fragment to put slides into it
 
       var slides = document.createDocumentFragment(); // Loop through the slides, add styling and add them to document fragment
@@ -283,7 +275,7 @@ function () {
       return itemContainer;
     }
     /**
-     * Determinates slides number accordingly to clients viewport.
+     * sets amount of visible slides based on viewport (fixed number or object value for responsive changes)
      */
 
   }, {
@@ -303,7 +295,7 @@ function () {
       }
     }
     /**
-     * Go to previous slide.
+     * Previous slide
      */
 
   }, {
@@ -311,25 +303,25 @@ function () {
     value: function prevSlide() {
       var countSlides = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
 
-      // early return when there is nothing to slide
+      // early return if no slides
       if (this.innerItems.length <= this.visibleSlides) {
         return;
       }
 
-      var beforeChange = this.curSlide;
+      var curSlideCheck = this.curSlide;
 
       if (this.config.loop) {
-        var isNewIndexClone = this.curSlide - countSlides < 0;
+        var isCloneSlide = this.curSlide - countSlides < 0;
 
-        if (isNewIndexClone) {
-          this.isNotTransition();
-          var mirrorSlideIndex = this.curSlide + this.innerItems.length;
-          var mirrorSlideIndexOffset = this.visibleSlides;
-          var moveTo = mirrorSlideIndex + mirrorSlideIndexOffset;
-          var offset = (this.config.rtl ? 1 : -1) * moveTo * (this.selectorWidth / this.visibleSlides);
+        if (isCloneSlide) {
+          var cloneIndex = this.curSlide + this.innerItems.length;
+          var cloneIndexOffset = this.visibleSlides;
+          var newPos = cloneIndex + cloneIndexOffset;
+          var offset = (this.config.rtl ? 1 : -1) * newPos * (this.selectorWidth / this.visibleSlides);
           var dragDistance = this.config.draggable ? this.drag.endXAxis - this.drag.startXAxis : 0;
+          this.isNotTransition();
           this.slideItem.style.transform = "translate3d(".concat(offset + dragDistance, "px, 0, 0)");
-          this.curSlide = mirrorSlideIndex - countSlides;
+          this.curSlide = cloneIndex - countSlides;
         } else {
           this.curSlide -= countSlides;
         }
@@ -337,13 +329,13 @@ function () {
         this.curSlide = Math.max(this.curSlide - countSlides, 0);
       }
 
-      if (beforeChange !== this.curSlide) {
+      if (curSlideCheck !== this.curSlide) {
         this.slideToCurrent(this.config.loop);
         this.config.onChange.call(this);
       }
     }
     /**
-     * Go to next slide.
+     * Next slide
      */
 
   }, {
@@ -356,20 +348,20 @@ function () {
         return;
       }
 
-      var beforeChange = this.curSlide;
+      var curSlideCheck = this.curSlide;
 
       if (this.config.loop) {
-        var isNewIndexClone = this.curSlide + countSlides > this.innerItems.length - this.visibleSlides;
+        var isCloneSlide = this.curSlide + countSlides > this.innerItems.length - this.visibleSlides;
 
-        if (isNewIndexClone) {
+        if (isCloneSlide) {
           this.isNotTransition();
-          var mirrorSlideIndex = this.curSlide - this.innerItems.length;
-          var mirrorSlideIndexOffset = this.visibleSlides;
-          var moveTo = mirrorSlideIndex + mirrorSlideIndexOffset;
-          var offset = (this.config.rtl ? 1 : -1) * moveTo * (this.selectorWidth / this.visibleSlides);
+          var cloneIndex = this.curSlide - this.innerItems.length;
+          var cloneIndexOffset = this.visibleSlides;
+          var newPos = cloneIndex + cloneIndexOffset;
+          var offset = (this.config.rtl ? 1 : -1) * newPos * (this.selectorWidth / this.visibleSlides);
           var dragDistance = this.config.draggable ? this.drag.endXAxis - this.drag.startXAxis : 0;
           this.slideItem.style.transform = "translate3d(".concat(offset + dragDistance, "px, 0, 0)");
-          this.curSlide = mirrorSlideIndex + countSlides;
+          this.curSlide = cloneIndex + countSlides;
         } else {
           this.curSlide += countSlides;
         }
@@ -377,7 +369,7 @@ function () {
         this.curSlide = Math.min(this.curSlide + countSlides, this.innerItems.length - this.visibleSlides);
       }
 
-      if (beforeChange !== this.curSlide) {
+      if (curSlideCheck !== this.curSlide) {
         this.slideToCurrent(this.config.loop);
         this.config.onChange.call(this);
       }
@@ -403,7 +395,7 @@ function () {
       this.slideItem.style.transition = "all ".concat(this.config.duration, "ms ").concat(this.config.easeMode);
     }
     /**
-     * Go to slide with particular index
+     * Go to specific slide method
      */
 
   }, {
@@ -413,16 +405,16 @@ function () {
         return;
       }
 
-      var beforeChange = this.curSlide;
+      var curSlideCheck = this.curSlide;
       this.curSlide = this.config.loop ? index % this.innerItems.length : Math.min(Math.max(index, 0), this.innerItems.length - this.visibleSlides);
 
-      if (beforeChange !== this.curSlide) {
+      if (curSlideCheck !== this.curSlide) {
         this.slideToCurrent();
         this.config.onChange.call(this);
       }
     }
     /**
-     * Moves sliders frame to position of currently active slide
+     * Jump to active slide
      */
 
   }, {
@@ -446,7 +438,7 @@ function () {
       }
     }
     /**
-     * Recalculate drag /swipe event and reposition the frame of a slider
+     * Get new position after dragging
      */
 
   }, {
@@ -482,10 +474,6 @@ function () {
       this.selectorWidth = this.selector.offsetWidth;
       this.sliderContainerCreate();
     }
-    /**
-     * Clear drag after touchend and mouseup event
-     */
-
   }, {
     key: "stopDragging",
     value: function stopDragging() {
@@ -498,7 +486,7 @@ function () {
       };
     }
     /**
-     * Remove item from carousel.
+     * Remove item method
      */
 
   }, {
@@ -516,7 +504,7 @@ function () {
       this.sliderContainerCreate();
     }
     /**
-     * Insert item to carousel at particular index.
+     * Insert item method
      */
 
   }, {
@@ -526,7 +514,7 @@ function () {
       this.sliderContainerCreate();
     }
     /**
-     * Prepend item to carousel.
+     * Prepend item method
      */
 
   }, {
@@ -535,7 +523,7 @@ function () {
       this.insert(item, 0);
     }
     /**
-     * Append item to carousel.
+     * Append item method
      */
 
   }, {
@@ -685,13 +673,14 @@ function () {
       }
     }
     /**
-     * Removes listeners and optionally restores to initial markup
+     * destroy method
      */
 
   }, {
     key: "destroy",
     value: function destroy() {
-      var restoreMarkup = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+      var restore = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+      // remove listeners
       window.removeEventListener('resize', this.resizeHandler);
       this.selector.removeEventListener('click', this.clickHandler);
       this.selector.removeEventListener('mouseup', this.mouseupHandler);
@@ -700,9 +689,9 @@ function () {
       this.selector.removeEventListener('mousemove', this.mousemoveHandler);
       this.selector.removeEventListener('touchstart', this.touchstartHandler);
       this.selector.removeEventListener('touchend', this.touchendHandler);
-      this.selector.removeEventListener('touchmove', this.touchmoveHandler);
+      this.selector.removeEventListener('touchmove', this.touchmoveHandler); // restore to initial markup
 
-      if (restoreMarkup) {
+      if (restore) {
         var slides = document.createDocumentFragment();
 
         for (var i = 0; i < this.innerItems.length; i += 1) {
