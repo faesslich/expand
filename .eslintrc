@@ -9,7 +9,7 @@
         "sourceType": "module"
     },
     "rules": {
-        "no-use-before-define": OFF,
+        "no-use-before-define": "off",
         "max-len": [1, {"code": 120, "tabWidth": 2, "ignoreUrls": true}]
     }
 }

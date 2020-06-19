@@ -42,7 +42,7 @@ export default class Expand {
    * @param options
    * @returns {{
    *    useCssFile, onChange, cssCustomPath, triggerDistance, rtl, duration, startIndex,
-   *    multipleDrag, draggable, easeMode, onInit, loop, selector, visibleSlides
+   *    multipleDrag, draggable, easeMode, gap, onInit, loop, selector, visibleSlides
    *  }}
    */
   static settingsOverride(options) {
@@ -59,6 +59,7 @@ export default class Expand {
       rtl: false,
       duration: 200,
       easeMode: 'ease-out',
+      gap: 0,
       onInit: () => {},
       onChange: () => {}
     };
@@ -182,9 +183,12 @@ export default class Expand {
       itemContainer.style.cssFloat = this.config.rtl ? 'right' : 'left';
     }
 
-    itemContainer.style.width = `${this.config.loop
-      ? 100 / (this.innerItems.length + (this.visibleSlides * 2))
-      : 100 / (this.innerItems.length)}%`;
+    if(this.config.gap) {
+      itemContainer.style.width = `calc(${this.config.loop ? 100 / (this.innerItems.length + (this.visibleSlides * 2)) : 100 / (this.innerItems.length)}% - ${this.config.gap}px)`;
+    } else {
+      itemContainer.style.width = `${this.config.loop ? 100 / (this.innerItems.length + (this.visibleSlides * 2)) : 100 / (this.innerItems.length)}%`;
+    }
+
     itemContainer.appendChild(item);
     return itemContainer;
   }
@@ -225,12 +229,12 @@ export default class Expand {
         const cloneIndex = this.curSlide + this.innerItems.length;
         const cloneIndexOffset = this.visibleSlides;
         const newPos = cloneIndex + cloneIndexOffset;
-        const offset = (this.config.rtl ? 1 : -1) * newPos * (this.selectorWidth / this.visibleSlides);
+        const offset = (this.config.rtl ? 1 : -1) * newPos * (this.selectorWidth / this.visibleSlides) + (this.config.gap ? this.config.gap : 0);
         const dragDistance = this.config.draggable ? this.drag.endXAxis - this.drag.startXAxis : 0;
 
         this.isNotTransition();
-
         this.slideItem.style.transform = `translate3d(${offset + dragDistance}px, 0, 0)`;
+
         this.curSlide = cloneIndex - countSlides;
       } else {
         this.curSlide -= countSlides;
@@ -267,10 +271,11 @@ export default class Expand {
         const cloneIndex = this.curSlide - this.innerItems.length;
         const cloneIndexOffset = this.visibleSlides;
         const newPos = cloneIndex + cloneIndexOffset;
-        const offset = (this.config.rtl ? 1 : -1) * newPos * (this.selectorWidth / this.visibleSlides);
+        const offset = (this.config.rtl ? 1 : -1) * newPos * (this.selectorWidth / this.visibleSlides) + (this.config.gap ? this.config.gap : 0);
         const dragDistance = this.config.draggable ? this.drag.endXAxis - this.drag.startXAxis : 0;
 
         this.slideItem.style.transform = `translate3d(${offset + dragDistance}px, 0, 0)`;
+
         this.curSlide = cloneIndex + countSlides;
       } else {
         this.curSlide += countSlides;
@@ -329,13 +334,13 @@ export default class Expand {
    */
   slideToCurrent(isTransition) {
     const curSlide = this.config.loop ? this.curSlide + this.visibleSlides : this.curSlide;
-    const offset = (this.config.rtl ? 1 : -1) * curSlide * (this.selectorWidth / this.visibleSlides);
+    const offset = (this.config.rtl ? 1 : -1) * curSlide * (this.selectorWidth / this.visibleSlides) + (this.config.gap ? this.config.gap : 0);
 
     if (isTransition) {
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           this.isTransition();
-          this.slideItem.style.transform = `translate3d(${offset}px, 0, 0)`;
+          this.slideItem.style.transform = `translate3d(${offset + this.config.gap}px, 0, 0)`;
         });
       });
     } else {
@@ -446,7 +451,7 @@ export default class Expand {
    */
   clickHandler(e) {
     // prevent clicking link on dragging
-    // (note: if subitems inside slide, you need zo set `pointer-events: none` via css.)
+    // (note: if subitems inside slide, you need to set `pointer-events: none` via css.)
     if (this.drag.preventClick) {
       e.preventDefault();
     }
@@ -497,7 +502,7 @@ export default class Expand {
       const curSlide = this.config.loop ? this.curSlide + this.visibleSlides : this.curSlide;
       const currentOffset = curSlide * (this.selectorWidth / this.visibleSlides);
       const dragOffset = (this.drag.endXAxis - this.drag.startXAxis);
-      const offset = this.config.rtl ? currentOffset + dragOffset : currentOffset - dragOffset;
+      const offset = this.config.rtl ? currentOffset + dragOffset + (this.config.gap ? this.config.gap : 0) : currentOffset - dragOffset - (this.config.gap ? this.config.gap : 0);
       this.slideItem.style.transform = `translate3d(${(this.config.rtl ? 1 : -1) * offset}px, 0, 0)`;
     }
   }
@@ -565,7 +570,7 @@ export default class Expand {
       const curSlide = this.config.loop ? this.curSlide + this.visibleSlides : this.curSlide;
       const currentOffset = curSlide * (this.selectorWidth / this.visibleSlides);
       const dragOffset = (this.drag.endXAxis - this.drag.startXAxis);
-      const offset = this.config.rtl ? currentOffset + dragOffset : currentOffset - dragOffset;
+      const offset = this.config.rtl ? currentOffset + dragOffset + (this.config.gap ? this.config.gap : 0) : currentOffset - dragOffset - (this.config.gap ? this.config.gap : 0);
       this.slideItem.style.transform = `translate3d(${(this.config.rtl ? 1 : -1) * offset}px, 0, 0)`;
     }
   }

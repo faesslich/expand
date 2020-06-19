@@ -1,8 +1,8 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Hallo</title>
+    <title>expandJS - Demo</title>
 </head>
 <body class="demo">
 
@@ -51,15 +51,9 @@
 <script type="module">
   import Expand from '../src/expand.js';
 
-  let forEach = function (array, callback, scope) {
-    for (let i = 0; i < array.length; i++) {
-      callback.call(scope, i, array[i]);
-    }
-  };
-
-  let sliders = document.querySelectorAll('.slider');
-  forEach(sliders, function (index, value) {
-    const slider = new Expand({
+  const sliders = document.querySelectorAll('.slider');
+  sliders.forEach(function (value) {
+    new Expand({
       selector: value,
       duration: 300,
       easeMode: 'ease-out',
@@ -77,9 +71,9 @@
     });
   });
 
-  let sliders2 = document.querySelectorAll('.slider2');
-  forEach(sliders2, function (index, value) {
-    const slider2 = new Expand({
+  const sliders2 = document.querySelectorAll('.slider2');
+  sliders2.forEach(function (value) {
+    new Expand({
       selector: value,
       duration: 300,
       easeMode: 'ease-out',
@@ -96,8 +90,6 @@
       loop: true
     });
   });
-
-
 </script>
 </body>
 </html>
