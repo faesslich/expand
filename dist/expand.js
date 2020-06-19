@@ -115,7 +115,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -123,9 +123,7 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var Expand =
-/*#__PURE__*/
-function () {
+var Expand = /*#__PURE__*/function () {
   /**
    * Constructor
    * @param options
@@ -154,7 +152,7 @@ function () {
    * @param options
    * @returns {{
    *    useCssFile, onChange, cssCustomPath, triggerDistance, rtl, duration, startIndex,
-   *    multipleDrag, draggable, easeMode, onInit, loop, selector, visibleSlides
+   *    multipleDrag, draggable, easeMode, gap, onInit, loop, selector, visibleSlides
    *  }}
    */
 
@@ -282,7 +280,12 @@ function () {
         itemContainer.style.cssFloat = this.config.rtl ? 'right' : 'left';
       }
 
-      itemContainer.style.width = "".concat(this.config.loop ? 100 / (this.innerItems.length + this.visibleSlides * 2) : 100 / this.innerItems.length, "%");
+      if (this.config.gap) {
+        itemContainer.style.width = "calc(".concat(this.config.loop ? 100 / (this.innerItems.length + this.visibleSlides * 2) : 100 / this.innerItems.length, "% - ").concat(this.config.gap, "px)");
+      } else {
+        itemContainer.style.width = "".concat(this.config.loop ? 100 / (this.innerItems.length + this.visibleSlides * 2) : 100 / this.innerItems.length, "%");
+      }
+
       itemContainer.appendChild(item);
       return itemContainer;
     }
@@ -330,7 +333,7 @@ function () {
           var cloneIndex = this.curSlide + this.innerItems.length;
           var cloneIndexOffset = this.visibleSlides;
           var newPos = cloneIndex + cloneIndexOffset;
-          var offset = (this.config.rtl ? 1 : -1) * newPos * (this.selectorWidth / this.visibleSlides);
+          var offset = (this.config.rtl ? 1 : -1) * newPos * (this.selectorWidth / this.visibleSlides) + (this.config.gap ? this.config.gap : 0);
           var dragDistance = this.config.draggable ? this.drag.endXAxis - this.drag.startXAxis : 0;
           this.isNotTransition();
           this.slideItem.style.transform = "translate3d(".concat(offset + dragDistance, "px, 0, 0)");
@@ -372,7 +375,7 @@ function () {
           var cloneIndex = this.curSlide - this.innerItems.length;
           var cloneIndexOffset = this.visibleSlides;
           var newPos = cloneIndex + cloneIndexOffset;
-          var offset = (this.config.rtl ? 1 : -1) * newPos * (this.selectorWidth / this.visibleSlides);
+          var offset = (this.config.rtl ? 1 : -1) * newPos * (this.selectorWidth / this.visibleSlides) + (this.config.gap ? this.config.gap : 0);
           var dragDistance = this.config.draggable ? this.drag.endXAxis - this.drag.startXAxis : 0;
           this.slideItem.style.transform = "translate3d(".concat(offset + dragDistance, "px, 0, 0)");
           this.curSlide = cloneIndex + countSlides;
@@ -439,14 +442,14 @@ function () {
       var _this3 = this;
 
       var curSlide = this.config.loop ? this.curSlide + this.visibleSlides : this.curSlide;
-      var offset = (this.config.rtl ? 1 : -1) * curSlide * (this.selectorWidth / this.visibleSlides);
+      var offset = (this.config.rtl ? 1 : -1) * curSlide * (this.selectorWidth / this.visibleSlides) + (this.config.gap ? this.config.gap : 0);
 
       if (isTransition) {
         requestAnimationFrame(function () {
           requestAnimationFrame(function () {
             _this3.isTransition();
 
-            _this3.slideItem.style.transform = "translate3d(".concat(offset, "px, 0, 0)");
+            _this3.slideItem.style.transform = "translate3d(".concat(offset + _this3.config.gap, "px, 0, 0)");
           });
         });
       } else {
@@ -560,7 +563,7 @@ function () {
     key: "clickHandler",
     value: function clickHandler(e) {
       // prevent clicking link on dragging
-      // (note: if subitems inside slide, you need zo set `pointer-events: none` via css.)
+      // (note: if subitems inside slide, you need to set `pointer-events: none` via css.)
       if (this.drag.preventClick) {
         e.preventDefault();
       }
@@ -618,7 +621,7 @@ function () {
         var curSlide = this.config.loop ? this.curSlide + this.visibleSlides : this.curSlide;
         var currentOffset = curSlide * (this.selectorWidth / this.visibleSlides);
         var dragOffset = this.drag.endXAxis - this.drag.startXAxis;
-        var offset = this.config.rtl ? currentOffset + dragOffset : currentOffset - dragOffset;
+        var offset = this.config.rtl ? currentOffset + dragOffset + (this.config.gap ? this.config.gap : 0) : currentOffset - dragOffset - (this.config.gap ? this.config.gap : 0);
         this.slideItem.style.transform = "translate3d(".concat((this.config.rtl ? 1 : -1) * offset, "px, 0, 0)");
       }
     }
@@ -689,7 +692,7 @@ function () {
         var curSlide = this.config.loop ? this.curSlide + this.visibleSlides : this.curSlide;
         var currentOffset = curSlide * (this.selectorWidth / this.visibleSlides);
         var dragOffset = this.drag.endXAxis - this.drag.startXAxis;
-        var offset = this.config.rtl ? currentOffset + dragOffset : currentOffset - dragOffset;
+        var offset = this.config.rtl ? currentOffset + dragOffset + (this.config.gap ? this.config.gap : 0) : currentOffset - dragOffset - (this.config.gap ? this.config.gap : 0);
         this.slideItem.style.transform = "translate3d(".concat((this.config.rtl ? 1 : -1) * offset, "px, 0, 0)");
       }
     }
@@ -740,10 +743,11 @@ function () {
         rtl: false,
         duration: 200,
         easeMode: 'ease-out',
+        gap: 0,
         onInit: function onInit() {},
         onChange: function onChange() {}
       };
-      return _objectSpread({}, settings, {}, options);
+      return _objectSpread(_objectSpread({}, settings), options);
     }
   }]);
 
@@ -754,9 +758,11 @@ function () {
 
 /***/ }),
 /* 2 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "expand.min.css";
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (__webpack_require__.p + "expand.min.css");
 
 /***/ })
 /******/ ]);

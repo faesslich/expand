@@ -10,6 +10,7 @@
     },
     "rules": {
         "no-use-before-define": "off",
+        "no-multiple-empty-lines": "off",
         "max-len": [1, {"code": 120, "tabWidth": 2, "ignoreUrls": true}]
     }
 }
