@@ -1,7 +1,0 @@
-{
-  "name": "expand",
-  "description": "Demo Part for: Expand - the lightweight pure JS carousel/slider",
-  "scripts": {
-    "watch:demo": "webpack --watch"
-  }
-}
