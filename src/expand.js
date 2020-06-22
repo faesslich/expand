@@ -68,6 +68,7 @@ export default class Expand {
       prevArrowInner: 'prev',
       nextArrowInner: 'next',
       gap: 0,
+      keyboard: false,
       onInit: () => {},
       onChange: () => {}
     };
@@ -134,6 +135,11 @@ export default class Expand {
     // add arrows to slider
     if (this.config.arrows) {
       this.arrowsInit();
+    }
+
+    // add keyboard navigation to slider
+    if (this.config.keyboard) {
+      this.keyboardNavigaion();
     }
 
     this.config.onInit.call(this);
@@ -504,6 +510,22 @@ export default class Expand {
 
     this.prevSelector.addEventListener('click', () => this.prevSlide());
     this.nextSelector.addEventListener('click', () => this.nextSlide());
+  }
+
+
+  /**
+   * add keyboard navigation
+   */
+  keyboardNavigaion() {
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') {
+        this.prevSlide();
+      }
+
+      if (e.key === 'ArrowRight') {
+        this.nextSlide();
+      }
+    });
   }
 
 

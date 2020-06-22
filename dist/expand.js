@@ -218,6 +218,11 @@ var Expand = /*#__PURE__*/function () {
 
       if (this.config.arrows) {
         this.arrowsInit();
+      } // add keyboard navigation to slider
+
+
+      if (this.config.keyboard) {
+        this.keyboardNavigaion();
       }
 
       this.config.onInit.call(this);
@@ -611,6 +616,25 @@ var Expand = /*#__PURE__*/function () {
       });
     }
     /**
+     * add keyboard navigation
+     */
+
+  }, {
+    key: "keyboardNavigaion",
+    value: function keyboardNavigaion() {
+      var _this6 = this;
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowLeft') {
+          _this6.prevSlide();
+        }
+
+        if (e.key === 'ArrowRight') {
+          _this6.nextSlide();
+        }
+      });
+    }
+    /**
      * click event handler
      */
 
@@ -807,6 +831,7 @@ var Expand = /*#__PURE__*/function () {
         prevArrowInner: 'prev',
         nextArrowInner: 'next',
         gap: 0,
+        keyboard: false,
         onInit: function onInit() {},
         onChange: function onChange() {}
       };
