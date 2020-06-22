@@ -46,10 +46,10 @@
     "dist"
   ],
   "repository": "faesslich/expand",
-  "author": "Fabian Esser <post@faesslich.de> (https://faesslich.de/)",
+  "author": "Fabian Esser <post@fe-dev.com> (https://fe-dev.com/)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/faesslich/expand/issues"
   },
-  "homepage": "https://faesslich.de/expand"
+  "homepage": "https://fe-dev.com/expand"
 }
