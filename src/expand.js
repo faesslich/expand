@@ -35,6 +35,11 @@ export default class Expand {
 
     this.slidesAmount();
     this.init();
+
+    // trigger autoplay if enabled
+    if (this.config.autoplay) {
+      this.autoPlay();
+    }
   }
 
   /**
@@ -55,10 +60,13 @@ export default class Expand {
       draggable: true,
       multipleDrag: true,
       triggerDistance: 20,
-      loop: false,
+      loop: true,
       rtl: false,
       duration: 200,
       easeMode: 'ease-out',
+      slidesToSlide: 1,
+      autoplay: 0,
+      autoplayDuration: 3000,
       gap: 0,
       onInit: () => {},
       onChange: () => {}
@@ -225,6 +233,10 @@ export default class Expand {
       return;
     }
 
+    if (this.config.slidesToSlide > 1) {
+      countSlides = this.config.slidesToSlide;
+    }
+
     const curSlideCheck = this.curSlide;
 
     if (this.config.loop) {
@@ -234,7 +246,7 @@ export default class Expand {
         const cloneIndexOffset = this.visibleSlides;
         const newPos = cloneIndex + cloneIndexOffset;
         const offset = (this.config.rtl ? 1 : -1) * newPos * (this.selectorWidth / this.visibleSlides)
-                       + (this.config.gap ? this.config.gap : 0);
+          + (this.config.gap ? this.config.gap : 0);
         const dragDistance = this.config.draggable ? this.drag.endXAxis - this.drag.startXAxis : 0;
 
         this.isNotTransition();
@@ -265,6 +277,10 @@ export default class Expand {
       return;
     }
 
+    if (this.config.slidesToSlide > 1) {
+      countSlides = this.config.slidesToSlide;
+    }
+
     const curSlideCheck = this.curSlide;
 
     if (this.config.loop) {
@@ -277,7 +293,7 @@ export default class Expand {
         const cloneIndexOffset = this.visibleSlides;
         const newPos = cloneIndex + cloneIndexOffset;
         const offset = (this.config.rtl ? 1 : -1) * newPos * (this.selectorWidth / this.visibleSlides)
-                       + (this.config.gap ? this.config.gap : 0);
+          + (this.config.gap ? this.config.gap : 0);
         const dragDistance = this.config.draggable ? this.drag.endXAxis - this.drag.startXAxis : 0;
 
         this.slideItem.style.transform = `translate3d(${offset + dragDistance}px, 0, 0)`;
@@ -341,7 +357,7 @@ export default class Expand {
   slideToCurrent(isTransition) {
     const curSlide = this.config.loop ? this.curSlide + this.visibleSlides : this.curSlide;
     const offset = (this.config.rtl ? 1 : -1) * curSlide * (this.selectorWidth / this.visibleSlides)
-                   + (this.config.gap ? this.config.gap : 0);
+      + (this.config.gap ? this.config.gap : 0);
 
     if (isTransition) {
       requestAnimationFrame(() => {
@@ -451,6 +467,14 @@ export default class Expand {
    */
   append(item) {
     this.insert(item, this.innerItems.length + 1);
+  }
+
+
+  /**
+   * Autoplay method
+   */
+  autoPlay() {
+    setInterval(() => this.nextSlide(), this.config.autoplayDuration);
   }
 
 
@@ -567,7 +591,7 @@ export default class Expand {
 
     if (this.drag.dragOff === null) {
       this.drag.dragOff = Math.abs(this.drag.startYAxis - e.touches[0].pageY)
-                          < Math.abs(this.drag.startXAxis - e.touches[0].pageX);
+        < Math.abs(this.drag.startXAxis - e.touches[0].pageX);
     }
 
     if (this.pointerDown && this.drag.dragOff) {

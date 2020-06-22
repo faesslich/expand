@@ -145,7 +145,11 @@ var Expand = /*#__PURE__*/function () {
       _this[method] = _this[method].bind(_this);
     });
     this.slidesAmount();
-    this.init();
+    this.init(); // trigger autoplay if enabled
+
+    if (this.config.autoplay) {
+      this.autoPlay();
+    }
   }
   /**
    * Overrides default settings with custom ones.
@@ -324,6 +328,10 @@ var Expand = /*#__PURE__*/function () {
         return;
       }
 
+      if (this.config.slidesToSlide > 1) {
+        countSlides = this.config.slidesToSlide;
+      }
+
       var curSlideCheck = this.curSlide;
 
       if (this.config.loop) {
@@ -363,6 +371,10 @@ var Expand = /*#__PURE__*/function () {
       // early return when there is nothing to slide
       if (this.innerItems.length <= this.visibleSlides) {
         return;
+      }
+
+      if (this.config.slidesToSlide > 1) {
+        countSlides = this.config.slidesToSlide;
       }
 
       var curSlideCheck = this.curSlide;
@@ -556,6 +568,19 @@ var Expand = /*#__PURE__*/function () {
       this.insert(item, this.innerItems.length + 1);
     }
     /**
+     * Autoplay method
+     */
+
+  }, {
+    key: "autoPlay",
+    value: function autoPlay() {
+      var _this4 = this;
+
+      setInterval(function () {
+        return _this4.nextSlide();
+      }, this.config.autoplayDuration);
+    }
+    /**
      * click event handler
      */
 
@@ -739,10 +764,13 @@ var Expand = /*#__PURE__*/function () {
         draggable: true,
         multipleDrag: true,
         triggerDistance: 20,
-        loop: false,
+        loop: true,
         rtl: false,
         duration: 200,
         easeMode: 'ease-out',
+        slidesToSlide: 1,
+        autoplay: 0,
+        autoplayDuration: 3000,
         gap: 0,
         onInit: function onInit() {},
         onChange: function onChange() {}

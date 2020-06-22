@@ -1,6 +1,6 @@
 const path = require('path');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-var UnminifiedWebpackPlugin = require('unminified-webpack-plugin');
+const UnminifiedWebpackPlugin = require('unminified-webpack-plugin');
 
 
 module.exports = {
@@ -25,7 +25,7 @@ module.exports = {
       },
       {
         test: /\.js$/,
-        exclude: /node_modules/,
+        exclude: /(node_modules)/,
         loader: 'babel-loader',
         query: {
           presets: ['@babel/preset-env'],
