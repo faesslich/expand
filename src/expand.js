@@ -35,11 +35,6 @@ export default class Expand {
 
     this.slidesAmount();
     this.init();
-
-    // trigger autoplay if enabled
-    if (this.config.autoplay) {
-      this.autoPlay();
-    }
   }
 
   /**
@@ -67,6 +62,11 @@ export default class Expand {
       slidesToSlide: 1,
       autoplay: 0,
       autoplayDuration: 3000,
+      arrows: false,
+      prevArrowClass: 'expand-prev',
+      nextArrowClass: 'expand-next',
+      prevArrowInner: 'prev',
+      nextArrowInner: 'next',
       gap: 0,
       onInit: () => {},
       onChange: () => {}
@@ -125,6 +125,16 @@ export default class Expand {
 
     // Build container and slide to current item
     this.sliderContainerCreate();
+
+    // trigger autoplay if enabled
+    if (this.config.autoplay) {
+      this.autoPlay();
+    }
+
+    // add arrows to slider
+    if (this.config.arrows) {
+      this.arrowsInit();
+    }
 
     this.config.onInit.call(this);
   }
@@ -475,6 +485,25 @@ export default class Expand {
    */
   autoPlay() {
     setInterval(() => this.nextSlide(), this.config.autoplayDuration);
+  }
+
+
+  /**
+   * add arrows
+   */
+  arrowsInit() {
+    this.prevSelector = document.createElement('button');
+    this.prevSelector.setAttribute('class', this.config.prevArrowClass);
+    this.prevSelector.innerHTML = this.config.prevArrowInner;
+    this.selector.appendChild(this.prevSelector);
+
+    this.nextSelector = document.createElement('button');
+    this.nextSelector.setAttribute('class', this.config.nextArrowClass);
+    this.nextSelector.innerHTML = this.config.nextArrowInner;
+    this.selector.appendChild(this.nextSelector);
+
+    this.prevSelector.addEventListener('click', () => this.prevSlide());
+    this.nextSelector.addEventListener('click', () => this.nextSlide());
   }
 
 

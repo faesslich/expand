@@ -145,11 +145,7 @@ var Expand = /*#__PURE__*/function () {
       _this[method] = _this[method].bind(_this);
     });
     this.slidesAmount();
-    this.init(); // trigger autoplay if enabled
-
-    if (this.config.autoplay) {
-      this.autoPlay();
-    }
+    this.init();
   }
   /**
    * Overrides default settings with custom ones.
@@ -213,7 +209,17 @@ var Expand = /*#__PURE__*/function () {
       } // Build container and slide to current item
 
 
-      this.sliderContainerCreate();
+      this.sliderContainerCreate(); // trigger autoplay if enabled
+
+      if (this.config.autoplay) {
+        this.autoPlay();
+      } // add arrows to slider
+
+
+      if (this.config.arrows) {
+        this.arrowsInit();
+      }
+
       this.config.onInit.call(this);
     }
     /**
@@ -581,6 +587,30 @@ var Expand = /*#__PURE__*/function () {
       }, this.config.autoplayDuration);
     }
     /**
+     * add arrows
+     */
+
+  }, {
+    key: "arrowsInit",
+    value: function arrowsInit() {
+      var _this5 = this;
+
+      this.prevSelector = document.createElement('button');
+      this.prevSelector.setAttribute('class', this.config.prevArrowClass);
+      this.prevSelector.innerHTML = this.config.prevArrowInner;
+      this.selector.appendChild(this.prevSelector);
+      this.nextSelector = document.createElement('button');
+      this.nextSelector.setAttribute('class', this.config.nextArrowClass);
+      this.nextSelector.innerHTML = this.config.nextArrowInner;
+      this.selector.appendChild(this.nextSelector);
+      this.prevSelector.addEventListener('click', function () {
+        return _this5.prevSlide();
+      });
+      this.nextSelector.addEventListener('click', function () {
+        return _this5.nextSlide();
+      });
+    }
+    /**
      * click event handler
      */
 
@@ -771,6 +801,11 @@ var Expand = /*#__PURE__*/function () {
         slidesToSlide: 1,
         autoplay: 0,
         autoplayDuration: 3000,
+        arrows: false,
+        prevArrowClass: 'expand-prev',
+        nextArrowClass: 'expand-next',
+        prevArrowInner: 'prev',
+        nextArrowInner: 'next',
         gap: 0,
         onInit: function onInit() {},
         onChange: function onChange() {}
