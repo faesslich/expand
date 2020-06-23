@@ -559,8 +559,8 @@ var Expand = /*#__PURE__*/function () {
      */
 
   }, {
-    key: "insert",
-    value: function insert(item, index) {
+    key: "insertElem",
+    value: function insertElem(item, index) {
       this.innerItems.splice(index, 0, item);
       this.sliderContainerCreate();
     }
@@ -570,9 +570,9 @@ var Expand = /*#__PURE__*/function () {
      */
 
   }, {
-    key: "prepend",
-    value: function prepend(item) {
-      this.insert(item, 0);
+    key: "prependElem",
+    value: function prependElem(item) {
+      this.insertElem(item, 0);
     }
     /**
      * Append item method
@@ -580,9 +580,9 @@ var Expand = /*#__PURE__*/function () {
      */
 
   }, {
-    key: "append",
-    value: function append(item) {
-      this.insert(item, this.innerItems.length + 1);
+    key: "appendElem",
+    value: function appendElem(item) {
+      this.insertElem(item, this.innerItems.length + 1);
     }
     /**
      * Autoplay method

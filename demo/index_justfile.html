@@ -286,6 +286,29 @@
 </section>
 
 
+
+<section class="expand-demo-section -white" id="expand-api-manipulate-items">
+    <h2>Manipulate Expand items example</h2>
+    <div class="section-desc">
+        <p>
+            This example shows the usage of the API to add items from every place you could think about,
+            as long as the Expand instance exists.
+        </p>
+    </div>
+
+    <div class="example-slider2 expand-api-manipulate-items-wrapper">
+        <div>1</div>
+        <div>2</div>
+        <div>3</div>
+    </div>
+
+    <div style="text-align: center; margin-top: 3rem">
+        <button style="width: 160px;" class="btn" id="prependButton">prepend item</button>
+        <button style="width: 160px;" class="btn" id="appendButton">append item</button>
+    </div>
+</section>
+
+
 <link rel="stylesheet" href="../dist/expand.min.css" />
 <link rel="stylesheet" href="assets/demo.min.css" />
 <script src="../dist/expand.dist.js"></script>
@@ -503,7 +526,7 @@
 
 
   /**
-   * responsive expand with a responsive arrow navigation example with custom selector
+   * bind instance to elements which are not part of the slider itself
    * @type {Element}
    */
   const prevBtn = document.querySelector('#goToPrev');
@@ -525,6 +548,34 @@
   // the number inside of the used methods tell the slider how many slides to change
   prevBtn.addEventListener('click', () => externalNavDemo.prevSlide(3));
   nextBtn.addEventListener('click', () => externalNavDemo.nextSlide(3));
+
+
+
+  /**
+   * easy manipulate expand and append or prepend new items
+   * @type {Element}
+   */
+  const prependBtn = document.querySelector('#prependButton');
+  const appendBtn = document.querySelector('#appendButton');
+  const manipulateItemsSelector = document.querySelector('.expand-api-manipulate-items-wrapper');
+  const manipulateItemsDemo = new Expand({
+    selector: manipulateItemsSelector,
+    visibleSlides: 2,
+    arrows: true
+  });
+
+  prependBtn.addEventListener('click', () => {
+    const prependItem = document.createElement('div');
+    prependItem.innerHTML = 'I am prepended!';
+    manipulateItemsDemo.prependElem(prependItem);
+  });
+
+  appendBtn.addEventListener('click', () => {
+    const appendItem = document.createElement('div');
+    appendItem.innerHTML = 'I am appended!';
+    manipulateItemsDemo.appendElem(appendItem);
+  });
+
 
 </script>
 </body>

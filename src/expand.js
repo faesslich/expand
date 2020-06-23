@@ -470,7 +470,7 @@ export default class Expand {
    * @param item
    * @param index
    */
-  insert(item, index) {
+  insertElem(item, index) {
     this.innerItems.splice(index, 0, item);
     this.sliderContainerCreate();
   }
@@ -480,8 +480,8 @@ export default class Expand {
    * Prepend item method
    * @param item
    */
-  prepend(item) {
-    this.insert(item, 0);
+  prependElem(item) {
+    this.insertElem(item, 0);
   }
 
 
@@ -489,8 +489,8 @@ export default class Expand {
    * Append item method
    * @param item
    */
-  append(item) {
-    this.insert(item, this.innerItems.length + 1);
+  appendElem(item) {
+    this.insertElem(item, this.innerItems.length + 1);
   }
 
 
