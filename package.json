@@ -1,5 +1,5 @@
 {
-  "name": "@faesslich/expand-js",
+  "name": "@faesslich/expand",
   "version": "0.3.4",
   "description": "Expand - the lightweight pure JS carousel/slider",
   "publishConfig": { "registry": "https://npm.pkg.github.com/" },
