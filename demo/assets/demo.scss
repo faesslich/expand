@@ -18,6 +18,11 @@ html {
   font-size: 62.5%;
 }
 
+img {
+  max-width: 100%;
+  height: auto;
+}
+
 html, body {
   margin: 0;
   padding: 0;
@@ -48,6 +53,17 @@ h1 {
 
 
 // DEMO
+
+header {
+  padding: 10rem 3rem;
+  text-align: center;
+  border-bottom: .1rem solid $gray-light;
+
+  img {
+    width: 50rem;
+  }
+}
+
 
 .expand-demo-section {
   padding: 9rem 3rem 11rem;

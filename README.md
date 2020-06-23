@@ -1,4 +1,6 @@
-# Expand - the lightweight pure JS carousel/slider
+![Expand Logo](https://github.com/faesslich/expand/blob/master/demo/assets/expand-logo.png?raw=true)
+
+## Expand - the lightweight pure JS carousel/slider
 
 Full docs coming soon
 
