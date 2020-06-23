@@ -1,3 +1,9 @@
+// Variables
+$gray-light: #ddd;
+$gray-lightest: #eee;
+$off-white: #fbfbfb;
+
+
 // RESET
 *, ::before, ::after {
   border: 0;
@@ -20,17 +26,61 @@ html, body {
 }
 
 body {
-  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 1.6rem;
+}
+
+h1 {
+  padding: 10rem 0 3rem;
+  font-size: 5rem;
+  font-weight: 400;
+  text-align: center;
+}
+
+.btn {
+  display: inline-block;
+  padding: 2rem 3rem;
+  background: $gray-light;
+  font-size: 1.6rem;
+  outline: 0;
+  cursor: pointer;
 }
 
 
 // DEMO
 
+.expand-demo-section {
+  padding: 9rem 3rem 11rem;
+  background: $off-white;
+  border-bottom: .1rem solid $gray-light;
+
+  &.-white { background: white; }
+
+  > h2 {
+    padding-bottom: 1rem;
+    font-size: 3rem;
+    font-weight: 400;
+    text-align: center;
+
+    @media (min-width: 480px) {
+      font-size: 4rem;
+      font-weight: 300;
+    }
+  }
+
+  .section-desc {
+    padding-bottom: 3rem;
+    text-align: center;
+  }
+}
+
 .slider-wrapper { padding: 2rem; }
 
-.slider, .slider2 {
+.example-slider, .example-slider2 {
+  max-width: 120rem;
+  margin: 0 auto;
   box-shadow: .1rem 0 0 0 #000, -.1rem 0 0 0 #000;
+
   .expand-js--item {
     > div {
       text-align: center;
@@ -42,7 +92,7 @@ body {
   }
 }
 
-.slider2 {
+.example-slider2 {
   .expand-js--item {
     > div {
       background: #55aaff;
@@ -50,3 +100,17 @@ body {
   }
 }
 
+.expand-custom-arrows {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  background: hotpink;
+  color: white;
+
+  &:hover {
+    background: deeppink;
+  }
+
+  &.expand-js--prev { left: -2.5rem; }
+  &.expand-js--next { right: -2.5rem; }
+}
