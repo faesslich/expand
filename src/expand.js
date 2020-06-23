@@ -131,7 +131,7 @@ export default class Expand {
 
     // add keyboard navigation to slider
     if (this.config.keyboard) {
-      this.keyboardNavigaion();
+      this.keyboardNavigation();
     }
 
     this.config.onInit.call(this);
@@ -544,7 +544,7 @@ export default class Expand {
   /**
    * add keyboard navigation
    */
-  keyboardNavigaion() {
+  keyboardNavigation() {
     document.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowLeft') {
         this.prevSlide();
