@@ -47,7 +47,7 @@ export default class Expand {
    */
   static settingsOverride(options) {
     const defaults = {
-      selector: '.expand-js',
+      selector: '.expand-js-outer',
       visibleSlides: 1,
       useCssFile: 1,
       cssCustomPath: '',
@@ -57,7 +57,7 @@ export default class Expand {
       triggerDistance: 20,
       loop: true,
       rtl: false,
-      duration: 200,
+      duration: 500,
       easeMode: 'ease-out',
       slidesToSlide: 1,
       autoplay: 0,
