@@ -217,6 +217,7 @@ var Expand = /*#__PURE__*/function () {
 
 
       if (this.config.arrows) {
+        this.arrowsVisibility();
         this.arrowsInit();
       } // add keyboard navigation to slider
 
@@ -515,6 +516,8 @@ var Expand = /*#__PURE__*/function () {
 
       this.selectorWidth = this.selector.offsetWidth;
       this.sliderContainerCreate();
+      this.arrowsVisibility();
+      this.arrowsInit();
     }
   }, {
     key: "stopDragging",
@@ -600,20 +603,43 @@ var Expand = /*#__PURE__*/function () {
     value: function arrowsInit() {
       var _this5 = this;
 
-      this.prevSelector = document.createElement('button');
-      this.prevSelector.setAttribute('class', this.config.prevArrowClass);
-      this.prevSelector.innerHTML = this.config.prevArrowInner;
-      this.selector.appendChild(this.prevSelector);
-      this.nextSelector = document.createElement('button');
-      this.nextSelector.setAttribute('class', this.config.nextArrowClass);
-      this.nextSelector.innerHTML = this.config.nextArrowInner;
-      this.selector.appendChild(this.nextSelector);
-      this.prevSelector.addEventListener('click', function () {
-        return _this5.prevSlide();
-      });
-      this.nextSelector.addEventListener('click', function () {
-        return _this5.nextSlide();
-      });
+      if (this.arrowsVisible >= 1 && this.config.arrows) {
+        this.prevSelector = document.createElement('button');
+        this.prevSelector.setAttribute('class', this.config.prevArrowClass);
+        this.prevSelector.innerHTML = this.config.prevArrowInner;
+        this.selector.appendChild(this.prevSelector);
+        this.nextSelector = document.createElement('button');
+        this.nextSelector.setAttribute('class', this.config.nextArrowClass);
+        this.nextSelector.innerHTML = this.config.nextArrowInner;
+        this.selector.appendChild(this.nextSelector);
+        this.prevSelector.addEventListener('click', function () {
+          return _this5.prevSlide();
+        });
+        this.nextSelector.addEventListener('click', function () {
+          return _this5.nextSlide();
+        });
+      }
+    }
+    /**
+     * sets visibility of arrows based on viewport
+     * (fixed number or object value for responsive changes)
+     */
+
+  }, {
+    key: "arrowsVisibility",
+    value: function arrowsVisibility() {
+      var _this6 = this;
+
+      if (typeof this.config.arrowsVisible === 'number') {
+        this.arrowsVisible = this.config.arrowsVisible;
+      } else if (_typeof(this.config.arrowsVisible) === 'object') {
+        this.arrowsVisible = 1;
+        Object.keys(this.config.arrowsVisible).forEach(function (key) {
+          if (window.innerWidth >= key) {
+            _this6.arrowsVisible = _this6.config.arrowsVisible[key];
+          }
+        });
+      }
     }
     /**
      * add keyboard navigation
@@ -622,15 +648,15 @@ var Expand = /*#__PURE__*/function () {
   }, {
     key: "keyboardNavigaion",
     value: function keyboardNavigaion() {
-      var _this6 = this;
+      var _this7 = this;
 
       document.addEventListener('keydown', function (e) {
         if (e.key === 'ArrowLeft') {
-          _this6.prevSlide();
+          _this7.prevSlide();
         }
 
         if (e.key === 'ArrowRight') {
-          _this6.nextSlide();
+          _this7.nextSlide();
         }
       });
     }
@@ -826,6 +852,7 @@ var Expand = /*#__PURE__*/function () {
         autoplay: 0,
         autoplayDuration: 3000,
         arrows: false,
+        arrowsVisible: 1,
         prevArrowClass: 'expand-prev',
         nextArrowClass: 'expand-next',
         prevArrowInner: 'prev',

@@ -63,6 +63,7 @@ export default class Expand {
       autoplay: 0,
       autoplayDuration: 3000,
       arrows: false,
+      arrowsVisible: 1,
       prevArrowClass: 'expand-prev',
       nextArrowClass: 'expand-next',
       prevArrowInner: 'prev',
@@ -134,6 +135,7 @@ export default class Expand {
 
     // add arrows to slider
     if (this.config.arrows) {
+      this.arrowsVisibility();
       this.arrowsInit();
     }
 
@@ -425,6 +427,8 @@ export default class Expand {
     this.selectorWidth = this.selector.offsetWidth;
 
     this.sliderContainerCreate();
+    this.arrowsVisibility();
+    this.arrowsInit();
   }
 
   stopDragging() {
@@ -498,18 +502,38 @@ export default class Expand {
    * add arrows
    */
   arrowsInit() {
-    this.prevSelector = document.createElement('button');
-    this.prevSelector.setAttribute('class', this.config.prevArrowClass);
-    this.prevSelector.innerHTML = this.config.prevArrowInner;
-    this.selector.appendChild(this.prevSelector);
+    if (this.arrowsVisible >= 1 && this.config.arrows) {
+      this.prevSelector = document.createElement('button');
+      this.prevSelector.setAttribute('class', this.config.prevArrowClass);
+      this.prevSelector.innerHTML = this.config.prevArrowInner;
+      this.selector.appendChild(this.prevSelector);
 
-    this.nextSelector = document.createElement('button');
-    this.nextSelector.setAttribute('class', this.config.nextArrowClass);
-    this.nextSelector.innerHTML = this.config.nextArrowInner;
-    this.selector.appendChild(this.nextSelector);
+      this.nextSelector = document.createElement('button');
+      this.nextSelector.setAttribute('class', this.config.nextArrowClass);
+      this.nextSelector.innerHTML = this.config.nextArrowInner;
+      this.selector.appendChild(this.nextSelector);
 
-    this.prevSelector.addEventListener('click', () => this.prevSlide());
-    this.nextSelector.addEventListener('click', () => this.nextSlide());
+      this.prevSelector.addEventListener('click', () => this.prevSlide());
+      this.nextSelector.addEventListener('click', () => this.nextSlide());
+    }
+  }
+
+
+  /**
+   * sets visibility of arrows based on viewport
+   * (fixed number or object value for responsive changes)
+   */
+  arrowsVisibility() {
+    if (typeof this.config.arrowsVisible === 'number') {
+      this.arrowsVisible = this.config.arrowsVisible;
+    } else if (typeof this.config.arrowsVisible === 'object') {
+      this.arrowsVisible = 1;
+      Object.keys(this.config.arrowsVisible).forEach(key => {
+        if (window.innerWidth >= key) {
+          this.arrowsVisible = this.config.arrowsVisible[key];
+        }
+      });
+    }
   }
 
 
