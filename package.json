@@ -1,7 +1,8 @@
 {
-  "name": "expand",
-  "version": "0.1.3",
+  "name": "expand-js",
+  "version": "0.3.4",
   "description": "Expand - the lightweight pure JS carousel/slider",
+  "publishConfig": { "registry": "https://npm.pkg.github.com/" },
   "main": "dist/expand.min.js",
   "devDependencies": {
     "@babel/core": "^7.10.2",
