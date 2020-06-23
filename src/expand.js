@@ -46,7 +46,7 @@ export default class Expand {
    *  }}
    */
   static settingsOverride(options) {
-    const settings = {
+    const defaults = {
       selector: '.expand-js',
       visibleSlides: 1,
       useCssFile: 0,
@@ -64,17 +64,17 @@ export default class Expand {
       autoplayDuration: 3000,
       arrows: false,
       arrowsVisible: 1,
-      prevArrowClass: 'expand-prev',
-      nextArrowClass: 'expand-next',
-      prevArrowInner: 'prev',
-      nextArrowInner: 'next',
+      prevArrowClass: 'expand-js--prev',
+      nextArrowClass: 'expand-js--next',
+      prevArrowInner: '‹',
+      nextArrowInner: '›',
       gap: 0,
       keyboard: false,
       onInit: () => {},
       onChange: () => {}
     };
 
-    return { ...settings, ...options };
+    return { ...defaults, ...options };
   }
 
 
@@ -113,17 +113,7 @@ export default class Expand {
    */
   init() {
     this.attachEvents();
-    this.selector.classList.add('expand-js');
-    // inline css or with classes for more customizability
-    if (this.config.useCssFile) {
-      this.selector.classList.add('-hidden');
-      if (this.config.rtl) {
-        this.selector.classList.add('-rtl');
-      }
-    } else {
-      this.selector.style.overflow = 'hidden';
-      this.selector.style.direction = this.config.rtl ? 'rtl' : 'ltr'; // rtl or ltr
-    }
+    this.selector.classList.add('expand-outer');
 
     // Build container and slide to current item
     this.sliderContainerCreate();
@@ -155,6 +145,19 @@ export default class Expand {
     const widthItem = this.selectorWidth / this.visibleSlides;
     const itemWidthCalc = this.config.loop ? (2 * this.visibleSlides) + this.innerItems.length : this.innerItems.length;
 
+    this.slideItemWrapper = document.createElement('div');
+    this.slideItemWrapper.classList.add('expand-js');
+    // inline css or with classes for more customizability
+    if (this.config.useCssFile) {
+      this.slideItemWrapper.classList.add('-hidden');
+      if (this.config.rtl) {
+        this.slideItemWrapper.classList.add('-rtl');
+      }
+    } else {
+      this.slideItemWrapper.style.overflow = 'hidden';
+      this.slideItemWrapper.style.direction = this.config.rtl ? 'rtl' : 'ltr'; // rtl or ltr
+    }
+
     // Create frame and apply styling
     this.slideItem = document.createElement('div');
     this.slideItem.classList.add('expand-js--container');
@@ -184,8 +187,9 @@ export default class Expand {
 
     // Add fragment to the frame
     this.selector.innerHTML = '';
+    this.slideItemWrapper.appendChild(this.slideItem);
     this.slideItem.appendChild(slides);
-    this.selector.appendChild(this.slideItem);
+    this.selector.appendChild(this.slideItemWrapper);
 
     // Go to currently active slide after initial build
     this.slideToCurrent();
