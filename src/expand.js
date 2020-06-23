@@ -49,7 +49,7 @@ export default class Expand {
     const defaults = {
       selector: '.expand-js',
       visibleSlides: 1,
-      useCssFile: 0,
+      useCssFile: 1,
       cssCustomPath: '',
       startIndex: 0,
       draggable: true,
@@ -402,7 +402,7 @@ export default class Expand {
     const moveDistance = Math.abs(movement);
     const slideableSlides = this.config.multipleDrag
       ? Math.ceil(moveDistance / (this.selectorWidth / this.visibleSlides))
-      : 1;
+      : this.config.slidesToSlide;
 
     const slideToNegativeClone = movement > 0 && this.curSlide - slideableSlides < 0;
     const slideToPositiveClone = movement < 0

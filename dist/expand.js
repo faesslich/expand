@@ -492,7 +492,7 @@ var Expand = /*#__PURE__*/function () {
     value: function updateAfterDrag() {
       var movement = (this.config.rtl ? -1 : 1) * (this.drag.endXAxis - this.drag.startXAxis);
       var moveDistance = Math.abs(movement);
-      var slideableSlides = this.config.multipleDrag ? Math.ceil(moveDistance / (this.selectorWidth / this.visibleSlides)) : 1;
+      var slideableSlides = this.config.multipleDrag ? Math.ceil(moveDistance / (this.selectorWidth / this.visibleSlides)) : this.config.slidesToSlide;
       var slideToNegativeClone = movement > 0 && this.curSlide - slideableSlides < 0;
       var slideToPositiveClone = movement < 0 && this.curSlide + slideableSlides > this.innerItems.length - this.visibleSlides;
 
@@ -841,7 +841,7 @@ var Expand = /*#__PURE__*/function () {
       var defaults = {
         selector: '.expand-js',
         visibleSlides: 1,
-        useCssFile: 0,
+        useCssFile: 1,
         cssCustomPath: '',
         startIndex: 0,
         draggable: true,
