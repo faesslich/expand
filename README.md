@@ -1,4 +1,4 @@
-![Expand Logo](https://github.com/faesslich/expand/blob/master/demo/assets/expand-logo.png?raw=true)
+![Expand Logo](https://github.com/faesslich/expand/blob/master/demo/assets/expand-logo.png?raw=true =300x)
 
 ## Expand - the lightweight pure JS carousel/slider
 
