@@ -221,7 +221,7 @@ const featureSeptionDemo = new Expand({
   multipleDrag: true,
   triggerDistance: 30,
   slidesToSlide: 2,
-  autoplay: 1,
+  autoplay: true,
   autoplayDuration: 5000,
   arrows: true,
   arrowsVisible: {
@@ -250,7 +250,7 @@ for (const multiInstancesSelector of multiInstancesSelectors) {
     selector: multiInstancesSelector,
     duration: 300,
     easeMode: 'ease-out',
-    useCssFile: 1,
+    useCssFile: true,
     visibleSlides: {
       100: 1,
       768: 2

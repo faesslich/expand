@@ -44,12 +44,12 @@ export default class Expand {
    * @param dataOptions
    * @returns {
      * {
-       * useCssFile: number, centerModeRange: boolean, prevArrowInner: string, nextArrowInner: string, arrows: boolean,
+       * useCssFile: boolean, centerModeRange: boolean, prevArrowInner: string, nextArrowInner: string, arrows: boolean,
        * autoplayDuration: number, prevArrowClass: string, duration: number, startIndex: number, nextArrowClass: string,
        * multipleDrag: boolean, draggable: boolean, activeClass: boolean, onInit: function(), loop: boolean,
        * gap: number, selector: string, visibleSlides: number, slidesToSlide: number, keyboard: boolean,
        * onChange: function(), cssCustomPath: string, triggerDistance: number, centerMode: boolean,
-       * itemSelector: string, rtl: boolean, autoplay: number, easeMode: string, arrowsVisible: boolean,
+       * itemSelector: string, rtl: boolean, autoplay: boolean, easeMode: string, arrowsVisible: boolean,
        * pagination: boolean, paginationVisible: boolean
      * }
    * }
@@ -59,7 +59,7 @@ export default class Expand {
       selector: '.expand-js-outer',
       itemSelector: '.expand-js--item',
       visibleSlides: 1,
-      useCssFile: 1,
+      useCssFile: true,
       cssCustomPath: '',
       startIndex: 0,
       draggable: true,
@@ -75,7 +75,7 @@ export default class Expand {
       centerModeRange: false,
       pagination: false,
       paginationVisible: true,
-      autoplay: 0,
+      autoplay: true,
       autoplayDuration: 3000,
       arrows: false,
       arrowsVisible: true,
