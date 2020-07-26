@@ -264,7 +264,34 @@
 
 
 
-<section class="expand-demo-section" id="expand-api-navigate-binding">
+<section class="expand-demo-section" id="expand-callback-usage">
+
+    <pre style="text-align: center; font-size: 2rem">(>= v0.4.0)</pre>
+    <h2>OOTB callback example</h2>
+    <div class="section-desc">
+        <p>This example shows the usage of expand with its ootb callback methods</p>
+    </div>
+    <div class="example-slider expand-callback-usage-wrapper">
+        <div>1</div>
+        <div>2</div>
+        <div>3</div>
+        <div>4</div>
+        <div>5</div>
+        <div>6</div>
+    </div>
+
+    <div style="text-align: center; margin-top: 3rem">
+        <button style="width: 130px;" class="btn" id="goToPrevCallback">Previous</button>
+        <button style="width: 130px;" class="btn" id="goToNextCallback">Next</button>
+    </div>
+
+    <pre class="callback-text-output" style="text-align: center; margin-top: 2rem;">
+    </pre>
+</section>
+
+
+
+<section class="expand-demo-section -white" id="expand-api-navigate-binding">
     <h2>External navigation binding example</h2>
     <div class="section-desc">
         <p>This example shows the usage of expand with it's API functionality</p>
@@ -287,7 +314,7 @@
 
 
 
-<section class="expand-demo-section -white" id="expand-api-manipulate-items">
+<section class="expand-demo-section" id="expand-api-manipulate-items">
     <h2>Manipulate Expand items example</h2>
     <div class="section-desc">
         <p>
@@ -527,6 +554,35 @@
 
 
   /**
+   * expand with callback
+   * @type {Element}
+   */
+  const prevBtnCallback = document.querySelector('#goToPrevCallback');
+  const nextBtnCallback = document.querySelector('#goToNextCallback');
+  const callbackSelector = document.querySelector('.expand-callback-usage-wrapper');
+  const callbackDemo = new Expand({
+    selector: callbackSelector,
+    arrows: true,
+    visibleSlides: {
+      768: 2,
+      1024: 3
+    }
+  });
+
+  // the number inside of the used methods tell the slider how many slides to change
+  prevBtnCallback.addEventListener('click', () => callbackDemo.prevSlide(3, () => {
+    document.querySelector('.callback-text-output').innerHTML = 'Callback for <b>prevSlide</b> after one second';
+    console.log('Callback for nextSlide after one second');
+  }, 1000));
+
+  nextBtnCallback.addEventListener('click', () => callbackDemo.nextSlide(3, () => {
+    document.querySelector('.callback-text-output').innerHTML = 'Callback for <b>nextSlide</b> after one second';
+    console.log('Callback for nextSlide after one second');
+  }, 1000));
+
+
+
+  /**
    * bind instance to elements which are not part of the slider itself
    * @type {Element}
    */
@@ -549,7 +605,6 @@
   // the number inside of the used methods tell the slider how many slides to change
   prevBtn.addEventListener('click', () => externalNavDemo.prevSlide(3));
   nextBtn.addEventListener('click', () => externalNavDemo.nextSlide(3));
-
 
 
   /**

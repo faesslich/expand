@@ -248,8 +248,10 @@ export default class Expand {
   /**
    * Previous slide
    * @param countSlides
+   * @param cb
+   * @param delay
    */
-  prevSlide(countSlides = 1) {
+  prevSlide(countSlides = 1, cb, delay) {
     // early return if no slides
     if (this.innerItems.length <= this.visibleSlides) {
       return;
@@ -285,6 +287,12 @@ export default class Expand {
     if (curSlideCheck !== this.curSlide) {
       this.slideToCurrent(this.config.loop);
       this.config.onChange.call(this);
+
+      if (delay && cb) {
+        setTimeout(()=> { cb.call(this); }, delay);
+      } else if (!delay && cb) {
+        cb.call(this);
+      }
     }
   }
 
@@ -292,8 +300,10 @@ export default class Expand {
   /**
    * Next slide
    * @param countSlides
+   * @param cb
+   * @param delay
    */
-  nextSlide(countSlides = 1) {
+  nextSlide(countSlides = 1, cb, delay) {
     // early return when there is nothing to slide
     if (this.innerItems.length <= this.visibleSlides) {
       return;
@@ -319,7 +329,6 @@ export default class Expand {
         const dragDistance = this.config.draggable ? this.drag.endXAxis - this.drag.startXAxis : 0;
 
         this.slideItem.style.transform = `translate3d(${offset + dragDistance}px, 0, 0)`;
-
         this.curSlide = cloneIndex + countSlides;
       } else {
         this.curSlide += countSlides;
@@ -327,9 +336,16 @@ export default class Expand {
     } else {
       this.curSlide = Math.min(this.curSlide + countSlides, this.innerItems.length - this.visibleSlides);
     }
+
     if (curSlideCheck !== this.curSlide) {
       this.slideToCurrent(this.config.loop);
       this.config.onChange.call(this);
+
+      if (delay && cb) {
+        setTimeout(()=> { cb.call(this); }, delay);
+      } else if (!delay && cb) {
+        cb.call(this);
+      }
     }
   }
 
@@ -338,7 +354,6 @@ export default class Expand {
    * Disable transition on slideItem.
    */
   isNotTransition() {
-    this.slideItem.style.webkitTransition = `all 0ms ${this.config.easeMode}`;
     this.slideItem.style.transition = `all 0ms ${this.config.easeMode}`;
   }
 
@@ -347,7 +362,6 @@ export default class Expand {
    * Enable transition on slideItem.
    */
   isTransition() {
-    this.slideItem.style.webkitTransition = `all ${this.config.duration}ms ${this.config.easeMode}`;
     this.slideItem.style.transition = `all ${this.config.duration}ms ${this.config.easeMode}`;
   }
 
@@ -355,8 +369,10 @@ export default class Expand {
   /**
    * Go to specific slide method
    * @param index
+   * @param cb
+   * @param delay
    */
-  goToSlide(index) {
+  goToSlide(index, cb, delay) {
     if (this.innerItems.length <= this.visibleSlides) {
       return;
     }
@@ -368,6 +384,12 @@ export default class Expand {
     if (curSlideCheck !== this.curSlide) {
       this.slideToCurrent();
       this.config.onChange.call(this);
+
+      if (delay && cb) {
+        setTimeout(()=> { cb.call(this); }, delay);
+      } else if (!delay && cb) {
+        cb.call(this);
+      }
     }
   }
 
@@ -435,6 +457,7 @@ export default class Expand {
     this.arrowsInit();
   }
 
+
   stopDragging() {
     this.drag = {
       startXAxis: 0,
@@ -449,8 +472,10 @@ export default class Expand {
   /**
    * Remove item method
    * @param index
+   * @param cb
+   * @param delay
    */
-  remove(index) {
+  remove(index, cb, delay) {
     const lowerIndex = index < this.curSlide;
     const lastItem = (this.curSlide + this.visibleSlides) - 1 === index;
 
@@ -462,6 +487,12 @@ export default class Expand {
 
     // build a frame and slide to a curSlide
     this.sliderContainerCreate();
+
+    if (delay && cb) {
+      setTimeout(()=> { cb.call(this); }, delay);
+    } else if (!delay && cb) {
+      cb.call(this);
+    }
   }
 
 
@@ -469,28 +500,52 @@ export default class Expand {
    * Insert item method
    * @param item
    * @param index
+   * @param cb
+   * @param delay
    */
-  insertElem(item, index) {
+  insertElem(item, index, cb, delay) {
     this.innerItems.splice(index, 0, item);
     this.sliderContainerCreate();
+
+    if (delay && cb) {
+      setTimeout(()=> { cb.call(this); }, delay);
+    } else if (!delay && cb) {
+      cb.call(this);
+    }
   }
 
 
   /**
    * Prepend item method
    * @param item
+   * @param cb
+   * @param delay
    */
-  prependElem(item) {
+  prependElem(item, cb, delay) {
     this.insertElem(item, 0);
+
+    if (delay && cb) {
+      setTimeout(()=> { cb.call(this); }, delay);
+    } else if (!delay && cb) {
+      cb.call(this);
+    }
   }
 
 
   /**
    * Append item method
    * @param item
+   * @param cb
+   * @param delay
    */
-  appendElem(item) {
+  appendElem(item, cb, delay) {
     this.insertElem(item, this.innerItems.length + 1);
+
+    if (delay && cb) {
+      setTimeout(()=> { cb.call(this); }, delay);
+    } else if (!delay && cb) {
+      cb.call(this);
+    }
   }
 
 
@@ -607,7 +662,6 @@ export default class Expand {
 
       this.drag.endXAxis = e.pageX;
       this.selector.style.cursor = '-webkit-grabbing';
-      this.slideItem.style.webkitTransition = `all 0ms ${this.config.easeMode}`;
       this.slideItem.style.transition = `all 0ms ${this.config.easeMode}`;
 
       const curSlide = this.config.loop ? this.curSlide + this.visibleSlides : this.curSlide;
@@ -674,17 +728,17 @@ export default class Expand {
     }
 
     if (this.pointerDown && this.drag.dragOff) {
-      e.preventDefault();
-      this.drag.endXAxis = e.touches[0].pageX;
-      this.slideItem.style.webkitTransition = `0 all ${this.config.easeMode} `;
-      this.slideItem.style.transition = `0 all ${this.config.easeMode} `;
-
       const curSlide = this.config.loop ? this.curSlide + this.visibleSlides : this.curSlide;
       const currentOffset = curSlide * (this.selectorWidth / this.visibleSlides);
       const dragOffset = (this.drag.endXAxis - this.drag.startXAxis);
       const offset = this.config.rtl
         ? currentOffset + dragOffset + (this.config.gap ? this.config.gap : 0)
         : currentOffset - dragOffset - (this.config.gap ? this.config.gap : 0);
+
+      e.preventDefault();
+
+      this.drag.endXAxis = e.touches[0].pageX;
+      this.slideItem.style.transition = `0 all ${this.config.easeMode} `;
       this.slideItem.style.transform = `translate3d(${(this.config.rtl ? 1 : -1) * offset}px, 0, 0)`;
     }
   }
@@ -692,8 +746,10 @@ export default class Expand {
   /**
    * destroy method
    * @param restore
+   * @param cb
+   * @param delay
    */
-  destroy(restore = false) {
+  destroy(restore = false, cb, delay) {
     // remove listeners
     window.removeEventListener('resize', this.resizeHandler);
     this.selector.removeEventListener('click', this.clickHandler);
@@ -713,6 +769,12 @@ export default class Expand {
       }
       this.selector.innerHTML = '';
       this.selector.appendChild(slides).removeAttribute('style');
+    }
+
+    if (delay && cb) {
+      setTimeout(()=> { cb.call(this); }, delay);
+    } else if (!delay && cb) {
+      cb.call(this);
     }
   }
 }

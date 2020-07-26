@@ -12,6 +12,7 @@
         "no-use-before-define": "off",
         "no-multiple-empty-lines": "off",
         "no-param-reassign": "off",
+        "linebreak-style": "off",
         "max-len": [1, {"code": 120, "tabWidth": 2, "ignoreUrls": true}]
     }
 }

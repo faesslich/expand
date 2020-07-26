@@ -1,8 +1,10 @@
 {
   "name": "@faesslich/expand",
-  "version": "0.3.4",
+  "version": "0.4.0",
   "description": "Expand - the lightweight pure JS carousel/slider",
-  "publishConfig": { "registry": "https://npm.pkg.github.com/" },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
   "main": "dist/expand.min.js",
   "devDependencies": {
     "@babel/core": "^7.10.2",
@@ -23,6 +25,7 @@
     "extract-loader": "^5.1.0",
     "file-loader": "^6.0.0",
     "jest": "^26.0.1",
+    "node-sass": "^4.14.1",
     "mini-css-extract-plugin": "^0.9.0",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
     "postcss-cli": "^7.1.1",
