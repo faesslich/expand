@@ -110,7 +110,7 @@ const customExpandSelectorDemo = new Expand(
 
 
 ## Options
-``` json
+``` javascript
 {
   selector: '.expand-js-outer',
   itemSelector: '.expand-js--item',
