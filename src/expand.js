@@ -70,6 +70,8 @@ export default class Expand {
       activeClass: true,
       centerMode: false,
       centerModeRange: false,
+      pagination: false,
+      paginationVisible: true,
       autoplay: 0,
       autoplayDuration: 3000,
       arrows: false,
@@ -148,6 +150,12 @@ export default class Expand {
       this.activeClass();
     }
 
+    if (this.config.pagination) {
+      this.paginationVisibility();
+      this.paginationInit();
+      this.paginationUpdate();
+    }
+
     this.config.onInit.call(this);
   }
 
@@ -170,6 +178,10 @@ export default class Expand {
     } else {
       this.slideItemWrapper.style.overflow = 'hidden';
       this.slideItemWrapper.style.direction = this.config.rtl ? 'rtl' : 'ltr'; // rtl or ltr
+    }
+
+    if (this.config.pagination) {
+      this.slideItemWrapper.classList.add('-is-pagination');
     }
 
     // Create frame and apply styling
@@ -443,6 +455,10 @@ export default class Expand {
     if (this.config.useCssFile && this.config.activeClass) {
       this.activeClass();
     }
+
+    if (this.config.pagination) {
+      this.paginationUpdate();
+    }
   }
 
 
@@ -467,11 +483,8 @@ export default class Expand {
       && this.innerItems.length > this.visibleSlides) {
       this.nextSlide(slideableSlides);
     }
-    this.slideToCurrent(slideToNegativeClone || slideToPositiveClone);
 
-    if (this.config.useCssFile && this.config.activeClass) {
-      this.activeClass();
-    }
+    this.slideToCurrent(slideToNegativeClone || slideToPositiveClone);
   }
 
 
@@ -486,12 +499,20 @@ export default class Expand {
     }
     this.selectorWidth = this.selector.offsetWidth;
 
-    this.sliderContainerCreate();
-    this.arrowsVisibility();
-    this.arrowsInit();
+    if (this.config.arrows) {
+      this.sliderContainerCreate();
+      this.arrowsVisibility();
+      this.arrowsInit();
+    }
 
     if (this.config.useCssFile && this.config.activeClass) {
       this.activeClass();
+    }
+
+    if (this.config.pagination) {
+      this.paginationVisibility();
+      this.paginationInit();
+      this.paginationUpdate();
     }
   }
 
@@ -592,6 +613,74 @@ export default class Expand {
    */
   autoPlay() {
     setInterval(() => this.nextSlide(), this.config.autoplayDuration);
+  }
+
+
+  /**
+   * init pagination
+   */
+  paginationInit() {
+    if (this.paginationVisible === true && this.config.pagination) {
+      const availableItems = this.innerItems.length;
+      const visibleSlides = this.visibleSlides;
+      const paginationCount = Math.ceil(availableItems / visibleSlides);
+
+      this.paginationContainer = document.createElement('div');
+      this.paginationContainer.classList.add('expand-pagination');
+
+      for (let i = 0; i < paginationCount; i += 1) {
+        const jumpTo = ((i + 1) * visibleSlides) - visibleSlides > this.innerItems.length
+          ? this.innerItems.length
+          : ((i + 1) * visibleSlides) - visibleSlides;
+
+        this.paginationItem = document.createElement('span');
+        this.paginationItem.classList.add('pagination-item');
+        this.paginationItem.dataset.pagination = '' + (i + 1);
+        this.paginationItem.innerHTML = this.paginationItem.dataset.pagination;
+        this.paginationItem.addEventListener('click', () => this.goToSlide(jumpTo));
+
+        this.paginationContainer.appendChild(this.paginationItem);
+      }
+
+      this.selector.appendChild(this.paginationContainer);
+    }
+  }
+
+
+  /**
+   * update pagination based on current slide
+   */
+  paginationUpdate() {
+    if (this.paginationVisible === true && this.config.pagination) {
+      const paginationItems = this.selector.querySelectorAll('.pagination-item');
+      const getPaginationItem = Math.ceil(this.curSlide / this.visibleSlides) + 1;
+
+      for (let i = 0; i < paginationItems.length; i += 1) {
+        paginationItems[i].classList.remove('active');
+
+        if (getPaginationItem === Number(paginationItems[i].dataset.pagination)) {
+          paginationItems[i].classList.add('active');
+        }
+      }
+    }
+  }
+
+
+  /**
+   * sets visibility of pagination based on viewport
+   * (boolean or object value for responsive changes)
+   */
+  paginationVisibility() {
+    if (typeof this.config.paginationVisible === 'boolean') {
+      this.paginationVisible = this.config.paginationVisible;
+    } else if (typeof this.config.paginationVisible === 'object') {
+      this.paginationVisible = true;
+      Object.keys(this.config.paginationVisible).forEach(key => {
+        if (window.innerWidth >= key) {
+          this.paginationVisible = this.config.paginationVisible[key];
+        }
+      });
+    }
   }
 
 

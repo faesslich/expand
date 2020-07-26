@@ -240,6 +240,12 @@ var Expand = /*#__PURE__*/function () {
         this.activeClass();
       }
 
+      if (this.config.pagination) {
+        this.paginationVisibility();
+        this.paginationInit();
+        this.paginationUpdate();
+      }
+
       this.config.onInit.call(this);
     }
     /**
@@ -263,6 +269,10 @@ var Expand = /*#__PURE__*/function () {
       } else {
         this.slideItemWrapper.style.overflow = 'hidden';
         this.slideItemWrapper.style.direction = this.config.rtl ? 'rtl' : 'ltr'; // rtl or ltr
+      }
+
+      if (this.config.pagination) {
+        this.slideItemWrapper.classList.add('-is-pagination');
       } // Create frame and apply styling
 
 
@@ -563,6 +573,10 @@ var Expand = /*#__PURE__*/function () {
       if (this.config.useCssFile && this.config.activeClass) {
         this.activeClass();
       }
+
+      if (this.config.pagination) {
+        this.paginationUpdate();
+      }
     }
     /**
      * Get new position after dragging
@@ -584,10 +598,6 @@ var Expand = /*#__PURE__*/function () {
       }
 
       this.slideToCurrent(slideToNegativeClone || slideToPositiveClone);
-
-      if (this.config.useCssFile && this.config.activeClass) {
-        this.activeClass();
-      }
     }
     /**
      * dynamic item sizes for browser scaling
@@ -603,12 +613,21 @@ var Expand = /*#__PURE__*/function () {
       }
 
       this.selectorWidth = this.selector.offsetWidth;
-      this.sliderContainerCreate();
-      this.arrowsVisibility();
-      this.arrowsInit();
+
+      if (this.config.arrows) {
+        this.sliderContainerCreate();
+        this.arrowsVisibility();
+        this.arrowsInit();
+      }
 
       if (this.config.useCssFile && this.config.activeClass) {
         this.activeClass();
+      }
+
+      if (this.config.pagination) {
+        this.paginationVisibility();
+        this.paginationInit();
+        this.paginationUpdate();
       }
     }
   }, {
@@ -735,13 +754,93 @@ var Expand = /*#__PURE__*/function () {
       }, this.config.autoplayDuration);
     }
     /**
+     * init pagination
+     */
+
+  }, {
+    key: "paginationInit",
+    value: function paginationInit() {
+      var _this12 = this;
+
+      if (this.paginationVisible === true && this.config.pagination) {
+        var availableItems = this.innerItems.length;
+        var visibleSlides = this.visibleSlides;
+        var paginationCount = Math.ceil(availableItems / visibleSlides);
+        this.paginationContainer = document.createElement('div');
+        this.paginationContainer.classList.add('expand-pagination');
+
+        var _loop = function _loop(i) {
+          var jumpTo = (i + 1) * visibleSlides - visibleSlides > _this12.innerItems.length ? _this12.innerItems.length : (i + 1) * visibleSlides - visibleSlides;
+          _this12.paginationItem = document.createElement('span');
+
+          _this12.paginationItem.classList.add('pagination-item');
+
+          _this12.paginationItem.dataset.pagination = '' + (i + 1);
+          _this12.paginationItem.innerHTML = _this12.paginationItem.dataset.pagination;
+
+          _this12.paginationItem.addEventListener('click', function () {
+            return _this12.goToSlide(jumpTo);
+          });
+
+          _this12.paginationContainer.appendChild(_this12.paginationItem);
+        };
+
+        for (var i = 0; i < paginationCount; i += 1) {
+          _loop(i);
+        }
+
+        this.selector.appendChild(this.paginationContainer);
+      }
+    }
+    /**
+     * update pagination based on current slide
+     */
+
+  }, {
+    key: "paginationUpdate",
+    value: function paginationUpdate() {
+      if (this.paginationVisible === true && this.config.pagination) {
+        var paginationItems = this.selector.querySelectorAll('.pagination-item');
+        var getPaginationItem = Math.ceil(this.curSlide / this.visibleSlides) + 1;
+
+        for (var i = 0; i < paginationItems.length; i += 1) {
+          paginationItems[i].classList.remove('active');
+
+          if (getPaginationItem === Number(paginationItems[i].dataset.pagination)) {
+            paginationItems[i].classList.add('active');
+          }
+        }
+      }
+    }
+    /**
+     * sets visibility of pagination based on viewport
+     * (boolean or object value for responsive changes)
+     */
+
+  }, {
+    key: "paginationVisibility",
+    value: function paginationVisibility() {
+      var _this13 = this;
+
+      if (typeof this.config.paginationVisible === 'boolean') {
+        this.paginationVisible = this.config.paginationVisible;
+      } else if (_typeof(this.config.paginationVisible) === 'object') {
+        this.paginationVisible = true;
+        Object.keys(this.config.paginationVisible).forEach(function (key) {
+          if (window.innerWidth >= key) {
+            _this13.paginationVisible = _this13.config.paginationVisible[key];
+          }
+        });
+      }
+    }
+    /**
      * add arrows
      */
 
   }, {
     key: "arrowsInit",
     value: function arrowsInit() {
-      var _this12 = this;
+      var _this14 = this;
 
       if (this.arrowsVisible >= 1 && this.config.arrows) {
         this.prevSelector = document.createElement('button');
@@ -753,10 +852,10 @@ var Expand = /*#__PURE__*/function () {
         this.nextSelector.innerHTML = this.config.nextArrowInner;
         this.selector.appendChild(this.nextSelector);
         this.prevSelector.addEventListener('click', function () {
-          return _this12.prevSlide();
+          return _this14.prevSlide();
         });
         this.nextSelector.addEventListener('click', function () {
-          return _this12.nextSlide();
+          return _this14.nextSlide();
         });
       }
     }
@@ -768,7 +867,7 @@ var Expand = /*#__PURE__*/function () {
   }, {
     key: "arrowsVisibility",
     value: function arrowsVisibility() {
-      var _this13 = this;
+      var _this15 = this;
 
       if (typeof this.config.arrowsVisible === 'number') {
         this.arrowsVisible = this.config.arrowsVisible;
@@ -776,7 +875,7 @@ var Expand = /*#__PURE__*/function () {
         this.arrowsVisible = 1;
         Object.keys(this.config.arrowsVisible).forEach(function (key) {
           if (window.innerWidth >= key) {
-            _this13.arrowsVisible = _this13.config.arrowsVisible[key];
+            _this15.arrowsVisible = _this15.config.arrowsVisible[key];
           }
         });
       }
@@ -788,15 +887,15 @@ var Expand = /*#__PURE__*/function () {
   }, {
     key: "keyboardNavigation",
     value: function keyboardNavigation() {
-      var _this14 = this;
+      var _this16 = this;
 
       document.addEventListener('keydown', function (e) {
         if (e.key === 'ArrowLeft') {
-          _this14.prevSlide();
+          _this16.prevSlide();
         }
 
         if (e.key === 'ArrowRight') {
-          _this14.nextSlide();
+          _this16.nextSlide();
         }
       });
     }
@@ -1024,7 +1123,7 @@ var Expand = /*#__PURE__*/function () {
   }, {
     key: "destroy",
     value: function destroy() {
-      var _this15 = this;
+      var _this17 = this;
 
       var restore = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
       var cb = arguments.length > 1 ? arguments[1] : undefined;
@@ -1053,7 +1152,7 @@ var Expand = /*#__PURE__*/function () {
 
       if (delay && cb) {
         setTimeout(function () {
-          cb.call(_this15);
+          cb.call(_this17);
         }, delay);
       } else if (!delay && cb) {
         cb.call(this);
@@ -1080,6 +1179,8 @@ var Expand = /*#__PURE__*/function () {
         activeClass: true,
         centerMode: false,
         centerModeRange: false,
+        pagination: false,
+        paginationVisible: true,
         autoplay: 0,
         autoplayDuration: 3000,
         arrows: false,

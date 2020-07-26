@@ -37,4 +37,26 @@
   &--prev { left: -1rem; }
   &--next { right: -1rem; }
 
+
+  &.-is-pagination {
+     + .expand-js--prev {
+      margin-top: -2rem;
+
+       + .expand-js--next { margin-top: -2rem; }
+
+    }
+  }
+}
+
+.expand-pagination {
+  padding-top: 1rem;
+  text-align: center;
+
+  .pagination-item {
+    display: inline-block;
+    padding: .5rem;
+    cursor: pointer;
+
+    &.active { background: #ddd; }
+  }
 }

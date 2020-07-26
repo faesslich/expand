@@ -20,7 +20,7 @@ const responsiveDemo = new Expand({
   visibleSlides: {
     768: 2,
     1024: 3
-  },
+  }
 });
 
 
@@ -77,6 +77,32 @@ const customArrowNavDemo = new Expand({
   nextArrowClass: 'expand-js--next expand-custom-arrows',
   prevArrowInner: '<span>«</span>',
   nextArrowInner: '<span>»</span>'
+});
+
+
+
+/**
+ * responsive expand with a responsive pagination example
+ * @type {Element}
+ */
+const paginationSelector = document.querySelector('.expand-pagination-wrapper');
+const paginationDemo = new Expand({
+  selector: paginationSelector,
+  visibleSlides: {
+    768: 2,
+    1024: 3
+  },
+  arrows: true,
+  arrowsVisible: {
+    100: 0,
+    1024: 1
+  },
+  pagination: true,
+  // paginationVisible: true,
+  paginationVisible: {
+    0: false,
+    320: true
+  }
 });
 
 
