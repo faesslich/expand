@@ -150,10 +150,16 @@ var Expand = /*#__PURE__*/function () {
   /**
    * Overrides default settings with custom ones.
    * @param options
-   * @returns {{
-   *    useCssFile, onChange, cssCustomPath, triggerDistance, rtl, duration, startIndex,
-   *    multipleDrag, draggable, easeMode, gap, onInit, loop, selector, visibleSlides
-   *  }}
+   * @returns {
+     * {
+       * useCssFile: number, centerModeRange: boolean, prevArrowInner: string, nextArrowInner: string, arrows: boolean,
+       * autoplayDuration: number, prevArrowClass: string, duration: number, startIndex: number, nextArrowClass: string,
+       * multipleDrag: boolean, draggable: boolean, activeClass: boolean, onInit: function(), loop: boolean,
+       * gap: number, selector: string, visibleSlides: number, slidesToSlide: number, keyboard: boolean,
+       * onChange: function(), cssCustomPath: string, triggerDistance: number, centerMode: boolean,
+       * itemSelector: string, rtl: boolean, autoplay: number, easeMode: string, arrowsVisible: number
+     * }
+   * }
    */
 
 
@@ -177,14 +183,30 @@ var Expand = /*#__PURE__*/function () {
         }; // add event handlers
 
         window.addEventListener('resize', this.resizeHandler);
-        this.selector.addEventListener('click', this.clickHandler);
-        this.selector.addEventListener('touchstart', this.touchstartHandler);
-        this.selector.addEventListener('touchend', this.touchendHandler);
-        this.selector.addEventListener('touchmove', this.touchmoveHandler);
-        this.selector.addEventListener('mousedown', this.mousedownHandler);
-        this.selector.addEventListener('mouseup', this.mouseupHandler);
-        this.selector.addEventListener('mouseleave', this.mouseleaveHandler);
-        this.selector.addEventListener('mousemove', this.mousemoveHandler);
+        this.selector.addEventListener('click', this.clickHandler, {
+          passive: false
+        });
+        this.selector.addEventListener('touchstart', this.touchstartHandler, {
+          passive: false
+        });
+        this.selector.addEventListener('touchend', this.touchendHandler, {
+          passive: false
+        });
+        this.selector.addEventListener('touchmove', this.touchmoveHandler, {
+          passive: false
+        });
+        this.selector.addEventListener('mousedown', this.mousedownHandler, {
+          passive: false
+        });
+        this.selector.addEventListener('mouseup', this.mouseupHandler, {
+          passive: false
+        });
+        this.selector.addEventListener('mouseleave', this.mouseleaveHandler, {
+          passive: false
+        });
+        this.selector.addEventListener('mousemove', this.mousemoveHandler, {
+          passive: false
+        });
       }
     }
     /**
@@ -212,6 +234,10 @@ var Expand = /*#__PURE__*/function () {
 
       if (this.config.keyboard) {
         this.keyboardNavigation();
+      }
+
+      if (this.config.useCssFile && this.config.activeClass) {
+        this.activeClass();
       }
 
       this.config.onInit.call(this);
@@ -243,7 +269,16 @@ var Expand = /*#__PURE__*/function () {
       this.slideItem = document.createElement('div');
       this.slideItem.classList.add('expand-js--container');
       this.slideItem.style.width = "".concat(widthItem * itemWidthCalc, "px");
-      this.isTransition(); // Create a document fragment to put slides into it
+      this.isTransition();
+
+      if (this.config.centerMode) {
+        this.slideItem.classList.add('-is-center-mode');
+
+        if (this.config.centerModeRange) {
+          this.slideItem.classList.add('-is-center-range');
+        }
+      } // Create a document fragment to put slides into it
+
 
       var slides = document.createDocumentFragment(); // Loop through the slides, add styling and add them to document fragment
 
@@ -275,6 +310,10 @@ var Expand = /*#__PURE__*/function () {
       this.selector.appendChild(this.slideItemWrapper); // Go to currently active slide after initial build
 
       this.slideToCurrent();
+
+      if (this.config.useCssFile && this.config.activeClass) {
+        this.activeClass();
+      }
     }
     /**
      * Slider item creation
@@ -288,7 +327,7 @@ var Expand = /*#__PURE__*/function () {
       var itemContainer = document.createElement('div');
 
       if (this.config.useCssFile) {
-        itemContainer.classList.add('expand-js--item');
+        itemContainer.classList.add(this.config.itemSelector.replace('.', ''));
 
         if (this.config.rtl) {
           itemContainer.classList.add('f-right');
@@ -377,16 +416,14 @@ var Expand = /*#__PURE__*/function () {
       if (curSlideCheck !== this.curSlide) {
         this.slideToCurrent(this.config.loop);
         this.config.onChange.call(this);
-      }
 
-      if (delay && cb) {
-        setTimeout(function () {
-          cb.call(_this3);
-        }, delay);
-      }
-
-      if (!delay && cb) {
-        cb.call(this);
+        if (delay && cb) {
+          setTimeout(function () {
+            cb.call(_this3);
+          }, delay);
+        } else if (!delay && cb) {
+          cb.call(this);
+        }
       }
     }
     /**
@@ -443,9 +480,7 @@ var Expand = /*#__PURE__*/function () {
           setTimeout(function () {
             cb.call(_this4);
           }, delay);
-        }
-
-        if (!delay && cb) {
+        } else if (!delay && cb) {
           cb.call(this);
         }
       }
@@ -495,9 +530,7 @@ var Expand = /*#__PURE__*/function () {
           setTimeout(function () {
             cb.call(_this5);
           }, delay);
-        }
-
-        if (!delay && cb) {
+        } else if (!delay && cb) {
           cb.call(this);
         }
       }
@@ -526,6 +559,10 @@ var Expand = /*#__PURE__*/function () {
       } else {
         this.slideItem.style.transform = "translate3d(".concat(offset, "px, 0, 0)");
       }
+
+      if (this.config.useCssFile && this.config.activeClass) {
+        this.activeClass();
+      }
     }
     /**
      * Get new position after dragging
@@ -547,6 +584,10 @@ var Expand = /*#__PURE__*/function () {
       }
 
       this.slideToCurrent(slideToNegativeClone || slideToPositiveClone);
+
+      if (this.config.useCssFile && this.config.activeClass) {
+        this.activeClass();
+      }
     }
     /**
      * dynamic item sizes for browser scaling
@@ -565,6 +606,10 @@ var Expand = /*#__PURE__*/function () {
       this.sliderContainerCreate();
       this.arrowsVisibility();
       this.arrowsInit();
+
+      if (this.config.useCssFile && this.config.activeClass) {
+        this.activeClass();
+      }
     }
   }, {
     key: "stopDragging",
@@ -604,9 +649,7 @@ var Expand = /*#__PURE__*/function () {
         setTimeout(function () {
           cb.call(_this7);
         }, delay);
-      }
-
-      if (!delay && cb) {
+      } else if (!delay && cb) {
         cb.call(this);
       }
     }
@@ -630,9 +673,7 @@ var Expand = /*#__PURE__*/function () {
         setTimeout(function () {
           cb.call(_this8);
         }, delay);
-      }
-
-      if (!delay && cb) {
+      } else if (!delay && cb) {
         cb.call(this);
       }
     }
@@ -654,9 +695,7 @@ var Expand = /*#__PURE__*/function () {
         setTimeout(function () {
           cb.call(_this9);
         }, delay);
-      }
-
-      if (!delay && cb) {
+      } else if (!delay && cb) {
         cb.call(this);
       }
     }
@@ -678,9 +717,7 @@ var Expand = /*#__PURE__*/function () {
         setTimeout(function () {
           cb.call(_this10);
         }, delay);
-      }
-
-      if (!delay && cb) {
+      } else if (!delay && cb) {
         cb.call(this);
       }
     }
@@ -762,6 +799,81 @@ var Expand = /*#__PURE__*/function () {
           _this14.nextSlide();
         }
       });
+    }
+    /**
+     * add active class to visible slides
+     */
+
+  }, {
+    key: "activeClass",
+    value: function activeClass() {
+      var curSlide = this.config.loop ? this.curSlide + this.visibleSlides : this.curSlide;
+      var classCount = this.visibleSlides;
+      var availableItems = this.selector.querySelectorAll(this.config.itemSelector);
+      var itemSelector = this.config.itemSelector.replace('.', '');
+      var activeClass = itemSelector + '-active';
+
+      if (availableItems) {
+        for (var i = 0; i < availableItems.length; i += 1) {
+          availableItems[i].classList.remove(activeClass);
+        }
+
+        for (var j = 0; j < classCount; j += 1) {
+          availableItems[curSlide + j].classList.add(activeClass);
+        } // centered mode
+
+
+        if (this.config.centerMode) {
+          this.centerMode(itemSelector);
+        }
+      }
+    }
+    /**
+     * add center classes to items in the middle of visible slides
+     * @param itemSelector
+     */
+
+  }, {
+    key: "centerMode",
+    value: function centerMode(itemSelector) {
+      var curSlide = this.config.loop ? this.curSlide + this.visibleSlides : this.curSlide;
+      var classCount = this.visibleSlides;
+      var availableItems = this.selector.querySelectorAll('.' + itemSelector);
+      var centeredItem = Math.ceil(classCount / 2);
+      var centerClass = itemSelector + '-center';
+      var halfCenterClass = itemSelector + '-half-center';
+      var quarterCenterClass = itemSelector + '-quarter-center';
+
+      if (availableItems) {
+        for (var i = 0; i < availableItems.length; i += 1) {
+          availableItems[i].classList.remove(centerClass);
+          availableItems[i].classList.remove(halfCenterClass);
+          availableItems[i].classList.remove(quarterCenterClass);
+        }
+      }
+
+      for (var j = 0; j < classCount; j += 1) {
+        if (availableItems[curSlide + j]) {
+          availableItems[curSlide + centeredItem - 1].classList.add(centerClass);
+
+          if (classCount % 2 === 0) {
+            availableItems[curSlide + centeredItem].classList.add(centerClass);
+
+            if (classCount >= 6 && this.config.centerModeRange) {
+              availableItems[curSlide + centeredItem - 2].classList.add(halfCenterClass);
+              availableItems[curSlide + centeredItem + 1].classList.add(halfCenterClass);
+            }
+          } else if (classCount >= 5 && classCount % 2 !== 0 && this.config.centerModeRange) {
+            availableItems[curSlide + centeredItem - 2].classList.add(halfCenterClass);
+            availableItems[curSlide + centeredItem].classList.add(halfCenterClass);
+
+            if (classCount >= 7) {
+              availableItems[curSlide + centeredItem - 3].classList.add(quarterCenterClass);
+              availableItems[curSlide + centeredItem + 1].classList.add(quarterCenterClass);
+            }
+          }
+        }
+      }
     }
     /**
      * click event handler
@@ -943,9 +1055,7 @@ var Expand = /*#__PURE__*/function () {
         setTimeout(function () {
           cb.call(_this15);
         }, delay);
-      }
-
-      if (!delay && cb) {
+      } else if (!delay && cb) {
         cb.call(this);
       }
     }
@@ -954,6 +1064,7 @@ var Expand = /*#__PURE__*/function () {
     value: function settingsOverride(options) {
       var defaults = {
         selector: '.expand-js-outer',
+        itemSelector: '.expand-js--item',
         visibleSlides: 1,
         useCssFile: 1,
         cssCustomPath: '',
@@ -966,6 +1077,9 @@ var Expand = /*#__PURE__*/function () {
         duration: 500,
         easeMode: 'ease-out',
         slidesToSlide: 1,
+        activeClass: true,
+        centerMode: false,
+        centerModeRange: false,
         autoplay: 0,
         autoplayDuration: 3000,
         arrows: false,

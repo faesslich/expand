@@ -13,6 +13,7 @@
         "no-multiple-empty-lines": "off",
         "no-param-reassign": "off",
         "linebreak-style": "off",
+        "padded-blocks": "off",
         "max-len": [1, {"code": 120, "tabWidth": 2, "ignoreUrls": true}]
     }
 }

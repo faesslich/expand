@@ -40,14 +40,21 @@ export default class Expand {
   /**
    * Overrides default settings with custom ones.
    * @param options
-   * @returns {{
-   *    useCssFile, onChange, cssCustomPath, triggerDistance, rtl, duration, startIndex,
-   *    multipleDrag, draggable, easeMode, gap, onInit, loop, selector, visibleSlides
-   *  }}
+   * @returns {
+     * {
+       * useCssFile: number, centerModeRange: boolean, prevArrowInner: string, nextArrowInner: string, arrows: boolean,
+       * autoplayDuration: number, prevArrowClass: string, duration: number, startIndex: number, nextArrowClass: string,
+       * multipleDrag: boolean, draggable: boolean, activeClass: boolean, onInit: function(), loop: boolean,
+       * gap: number, selector: string, visibleSlides: number, slidesToSlide: number, keyboard: boolean,
+       * onChange: function(), cssCustomPath: string, triggerDistance: number, centerMode: boolean,
+       * itemSelector: string, rtl: boolean, autoplay: number, easeMode: string, arrowsVisible: number
+     * }
+   * }
    */
   static settingsOverride(options) {
     const defaults = {
       selector: '.expand-js-outer',
+      itemSelector: '.expand-js--item',
       visibleSlides: 1,
       useCssFile: 1,
       cssCustomPath: '',
@@ -60,6 +67,9 @@ export default class Expand {
       duration: 500,
       easeMode: 'ease-out',
       slidesToSlide: 1,
+      activeClass: true,
+      centerMode: false,
+      centerModeRange: false,
       autoplay: 0,
       autoplayDuration: 3000,
       arrows: false,
@@ -96,14 +106,14 @@ export default class Expand {
 
       // add event handlers
       window.addEventListener('resize', this.resizeHandler);
-      this.selector.addEventListener('click', this.clickHandler);
-      this.selector.addEventListener('touchstart', this.touchstartHandler);
-      this.selector.addEventListener('touchend', this.touchendHandler);
-      this.selector.addEventListener('touchmove', this.touchmoveHandler);
-      this.selector.addEventListener('mousedown', this.mousedownHandler);
-      this.selector.addEventListener('mouseup', this.mouseupHandler);
-      this.selector.addEventListener('mouseleave', this.mouseleaveHandler);
-      this.selector.addEventListener('mousemove', this.mousemoveHandler);
+      this.selector.addEventListener('click', this.clickHandler, { passive: false });
+      this.selector.addEventListener('touchstart', this.touchstartHandler, { passive: false });
+      this.selector.addEventListener('touchend', this.touchendHandler, { passive: false });
+      this.selector.addEventListener('touchmove', this.touchmoveHandler, { passive: false });
+      this.selector.addEventListener('mousedown', this.mousedownHandler, { passive: false });
+      this.selector.addEventListener('mouseup', this.mouseupHandler, { passive: false });
+      this.selector.addEventListener('mouseleave', this.mouseleaveHandler, { passive: false });
+      this.selector.addEventListener('mousemove', this.mousemoveHandler, { passive: false });
     }
   }
 
@@ -132,6 +142,10 @@ export default class Expand {
     // add keyboard navigation to slider
     if (this.config.keyboard) {
       this.keyboardNavigation();
+    }
+
+    if (this.config.useCssFile && this.config.activeClass) {
+      this.activeClass();
     }
 
     this.config.onInit.call(this);
@@ -164,6 +178,14 @@ export default class Expand {
     this.slideItem.style.width = `${widthItem * itemWidthCalc}px`;
     this.isTransition();
 
+    if (this.config.centerMode) {
+      this.slideItem.classList.add('-is-center-mode');
+
+      if (this.config.centerModeRange) {
+        this.slideItem.classList.add('-is-center-range');
+      }
+    }
+
     // Create a document fragment to put slides into it
     const slides = document.createDocumentFragment();
 
@@ -193,6 +215,10 @@ export default class Expand {
 
     // Go to currently active slide after initial build
     this.slideToCurrent();
+
+    if (this.config.useCssFile && this.config.activeClass) {
+      this.activeClass();
+    }
   }
 
   /**
@@ -203,7 +229,7 @@ export default class Expand {
   createSliderItem(item) {
     const itemContainer = document.createElement('div');
     if (this.config.useCssFile) {
-      itemContainer.classList.add('expand-js--item');
+      itemContainer.classList.add(this.config.itemSelector.replace('.', ''));
       if (this.config.rtl) {
         itemContainer.classList.add('f-right');
       } else {
@@ -413,6 +439,10 @@ export default class Expand {
     } else {
       this.slideItem.style.transform = `translate3d(${offset}px, 0, 0)`;
     }
+
+    if (this.config.useCssFile && this.config.activeClass) {
+      this.activeClass();
+    }
   }
 
 
@@ -438,6 +468,10 @@ export default class Expand {
       this.nextSlide(slideableSlides);
     }
     this.slideToCurrent(slideToNegativeClone || slideToPositiveClone);
+
+    if (this.config.useCssFile && this.config.activeClass) {
+      this.activeClass();
+    }
   }
 
 
@@ -455,6 +489,10 @@ export default class Expand {
     this.sliderContainerCreate();
     this.arrowsVisibility();
     this.arrowsInit();
+
+    if (this.config.useCssFile && this.config.activeClass) {
+      this.activeClass();
+    }
   }
 
 
@@ -609,6 +647,82 @@ export default class Expand {
         this.nextSlide();
       }
     });
+  }
+
+
+  /**
+   * add active class to visible slides
+   */
+  activeClass() {
+    const curSlide = this.config.loop ? this.curSlide + this.visibleSlides : this.curSlide;
+    const classCount = this.visibleSlides;
+    const availableItems = this.selector.querySelectorAll(this.config.itemSelector);
+    const itemSelector = this.config.itemSelector.replace('.', '');
+    const activeClass = itemSelector + '-active';
+
+    if (availableItems) {
+      for (let i = 0; i < availableItems.length; i += 1) {
+        availableItems[i].classList.remove(activeClass);
+      }
+
+      for (let j = 0; j < classCount; j += 1) {
+        availableItems[curSlide + j].classList.add(activeClass);
+      }
+
+      // centered mode
+      if (this.config.centerMode) {
+        this.centerMode(itemSelector);
+      }
+    }
+
+  }
+
+
+  /**
+   * add center classes to items in the middle of visible slides
+   * @param itemSelector
+   */
+  centerMode(itemSelector) {
+    const curSlide = this.config.loop ? this.curSlide + this.visibleSlides : this.curSlide;
+    const classCount = this.visibleSlides;
+    const availableItems = this.selector.querySelectorAll('.' + itemSelector);
+    const centeredItem = Math.ceil((classCount / 2));
+    const centerClass = itemSelector + '-center';
+    const halfCenterClass = itemSelector + '-half-center';
+    const quarterCenterClass = itemSelector + '-quarter-center';
+
+    if (availableItems) {
+      for (let i = 0; i < availableItems.length; i += 1) {
+        availableItems[i].classList.remove(centerClass);
+        availableItems[i].classList.remove(halfCenterClass);
+        availableItems[i].classList.remove(quarterCenterClass);
+      }
+    }
+
+    for (let j = 0; j < classCount; j += 1) {
+      if (availableItems[curSlide + j]) {
+        availableItems[curSlide + centeredItem - 1].classList.add(centerClass);
+
+        if (classCount % 2 === 0) {
+          availableItems[curSlide + centeredItem].classList.add(centerClass);
+
+          if (classCount >= 6 && this.config.centerModeRange) {
+            availableItems[curSlide + centeredItem - 2].classList.add(halfCenterClass);
+            availableItems[curSlide + centeredItem + 1].classList.add(halfCenterClass);
+          }
+
+        } else if (classCount >= 5 && classCount % 2 !== 0 && this.config.centerModeRange) {
+          availableItems[curSlide + centeredItem - 2].classList.add(halfCenterClass);
+          availableItems[curSlide + centeredItem].classList.add(halfCenterClass);
+
+          if (classCount >= 7) {
+            availableItems[curSlide + centeredItem - 3].classList.add(quarterCenterClass);
+            availableItems[curSlide + centeredItem + 1].classList.add(quarterCenterClass);
+          }
+
+        }
+      }
+    }
   }
 
 
