@@ -362,3 +362,20 @@ appendBtn.addEventListener('click', () => {
   appendItem.innerHTML = 'I am appended!';
   manipulateItemsDemo.appendElem(appendItem);
 });
+
+
+
+/**
+ * add settings to expand via data attribute or any JSON string.
+ * JSON String needs to get parsed as in this example!
+ * @type {Element}
+ */
+const dataOptionsSelector = document.querySelector('.expand-api-data-options-wrapper');
+const dataOptionsDemo = new Expand({
+  selector: dataOptionsSelector,
+  visibleSlides: 2,
+  arrows: true
+  },
+  // dataOptions
+  JSON.parse(dataOptionsSelector.dataset.options)
+);

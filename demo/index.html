@@ -423,6 +423,48 @@
     </div>
 </section>
 
+
+
+<section class="expand-demo-section" id="expand-api-data-options">
+    <h2>Get options via data attribute</h2>
+    <div class="section-desc">
+        <p>
+            This example shows the usage of the API to add options to slider via data attribute string.
+            String is parsed as JSON and merged with existing options.
+        </p>
+    </div>
+
+    <div class="example-slider expand-api-data-options-wrapper" data-options='
+        {
+            "arrows": true,
+            "rtl": true,
+            "visibleSlides": {
+                "768": 2,
+                "1024": 3,
+                "1280": 4
+            },
+            "autoplay": 1,
+            "arrowsVisible": {
+                "100": false,
+                "1024": true,
+                "1280": false
+            }
+        }
+    '>
+        <div>1</div>
+        <div>2</div>
+        <div>3</div>
+        <div>4</div>
+        <div>5</div>
+        <div>6</div>
+        <div>7</div>
+        <div>8</div>
+        <div>9</div>
+    </div>
+
+</section>
+
+
 <link rel="stylesheet" href="../dist/expand.min.css" />
 <link rel="stylesheet" href="dist/demo.min.css" />
 <script src="dist/demo.min.js"></script>

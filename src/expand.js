@@ -2,8 +2,9 @@ export default class Expand {
   /**
    * Constructor
    * @param options
+   * @param dataOptions
    */
-  constructor(options) {
+  constructor(options, dataOptions) {
     const eventHandlers = [
       'resizeHandler',
       'clickHandler',
@@ -16,7 +17,7 @@ export default class Expand {
       'mousemoveHandler'
     ];
 
-    this.config = Expand.settingsOverride(options);
+    this.config = Expand.settingsOverride(options, dataOptions);
     this.selector = (typeof this.config.selector === 'string')
       ? document.querySelector(this.config.selector)
       : this.config.selector;
@@ -40,6 +41,7 @@ export default class Expand {
   /**
    * Overrides default settings with custom ones.
    * @param options
+   * @param dataOptions
    * @returns {
      * {
        * useCssFile: number, centerModeRange: boolean, prevArrowInner: string, nextArrowInner: string, arrows: boolean,
@@ -52,7 +54,7 @@ export default class Expand {
      * }
    * }
    */
-  static settingsOverride(options) {
+  static settingsOverride(options, dataOptions) {
     const defaults = {
       selector: '.expand-js-outer',
       itemSelector: '.expand-js--item',
@@ -87,7 +89,7 @@ export default class Expand {
       onChange: () => {}
     };
 
-    return { ...defaults, ...options };
+    return { ...defaults, ...options, ...dataOptions };
   }
 
 
@@ -276,8 +278,8 @@ export default class Expand {
     } else if (typeof this.config.visibleSlides === 'object') {
       this.visibleSlides = 1;
       Object.keys(this.config.visibleSlides).forEach(key => {
-        if (window.innerWidth >= key) {
-          this.visibleSlides = this.config.visibleSlides[key];
+        if (window.innerWidth >= Number(key)) {
+          this.visibleSlides = this.config.visibleSlides[Number(key)];
         }
       });
     }
@@ -677,8 +679,8 @@ export default class Expand {
     } else if (typeof this.config.paginationVisible === 'object') {
       this.paginationVisible = true;
       Object.keys(this.config.paginationVisible).forEach(key => {
-        if (window.innerWidth >= key) {
-          this.paginationVisible = this.config.paginationVisible[key];
+        if (window.innerWidth >= Number(key)) {
+          this.paginationVisible = this.config.paginationVisible[Number(key)];
         }
       });
     }
@@ -716,8 +718,8 @@ export default class Expand {
     } else if (typeof this.config.arrowsVisible === 'object') {
       this.arrowsVisible = true;
       Object.keys(this.config.arrowsVisible).forEach(key => {
-        if (window.innerWidth >= key) {
-          this.arrowsVisible = this.config.arrowsVisible[key];
+        if (window.innerWidth >= Number(key)) {
+          this.arrowsVisible = this.config.arrowsVisible[Number(key)];
         }
       });
     }

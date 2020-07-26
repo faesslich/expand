@@ -87,7 +87,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
 /******/
 /******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "/dist/";
+/******/ 	__webpack_require__.p = "/assets";
 /******/
 /******/
 /******/ 	// Load entry module and return exports
@@ -127,14 +127,15 @@ var Expand = /*#__PURE__*/function () {
   /**
    * Constructor
    * @param options
+   * @param dataOptions
    */
-  function Expand(options) {
+  function Expand(options, dataOptions) {
     var _this = this;
 
     _classCallCheck(this, Expand);
 
     var eventHandlers = ['resizeHandler', 'clickHandler', 'touchstartHandler', 'touchendHandler', 'touchmoveHandler', 'mousedownHandler', 'mouseupHandler', 'mouseleaveHandler', 'mousemoveHandler'];
-    this.config = Expand.settingsOverride(options);
+    this.config = Expand.settingsOverride(options, dataOptions);
     this.selector = typeof this.config.selector === 'string' ? document.querySelector(this.config.selector) : this.config.selector; // Create global references
 
     this.selectorWidth = this.selector.offsetWidth;
@@ -150,6 +151,7 @@ var Expand = /*#__PURE__*/function () {
   /**
    * Overrides default settings with custom ones.
    * @param options
+   * @param dataOptions
    * @returns {
      * {
        * useCssFile: number, centerModeRange: boolean, prevArrowInner: string, nextArrowInner: string, arrows: boolean,
@@ -372,8 +374,8 @@ var Expand = /*#__PURE__*/function () {
       } else if (_typeof(this.config.visibleSlides) === 'object') {
         this.visibleSlides = 1;
         Object.keys(this.config.visibleSlides).forEach(function (key) {
-          if (window.innerWidth >= key) {
-            _this2.visibleSlides = _this2.config.visibleSlides[key];
+          if (window.innerWidth >= Number(key)) {
+            _this2.visibleSlides = _this2.config.visibleSlides[Number(key)];
           }
         });
       }
@@ -828,8 +830,8 @@ var Expand = /*#__PURE__*/function () {
       } else if (_typeof(this.config.paginationVisible) === 'object') {
         this.paginationVisible = true;
         Object.keys(this.config.paginationVisible).forEach(function (key) {
-          if (window.innerWidth >= key) {
-            _this13.paginationVisible = _this13.config.paginationVisible[key];
+          if (window.innerWidth >= Number(key)) {
+            _this13.paginationVisible = _this13.config.paginationVisible[Number(key)];
           }
         });
       }
@@ -875,8 +877,8 @@ var Expand = /*#__PURE__*/function () {
       } else if (_typeof(this.config.arrowsVisible) === 'object') {
         this.arrowsVisible = true;
         Object.keys(this.config.arrowsVisible).forEach(function (key) {
-          if (window.innerWidth >= key) {
-            _this15.arrowsVisible = _this15.config.arrowsVisible[key];
+          if (window.innerWidth >= Number(key)) {
+            _this15.arrowsVisible = _this15.config.arrowsVisible[Number(key)];
           }
         });
       }
@@ -1161,7 +1163,7 @@ var Expand = /*#__PURE__*/function () {
     }
   }], [{
     key: "settingsOverride",
-    value: function settingsOverride(options) {
+    value: function settingsOverride(options, dataOptions) {
       var defaults = {
         selector: '.expand-js-outer',
         itemSelector: '.expand-js--item',
@@ -1195,7 +1197,7 @@ var Expand = /*#__PURE__*/function () {
         onInit: function onInit() {},
         onChange: function onChange() {}
       };
-      return _objectSpread(_objectSpread({}, defaults), options);
+      return _objectSpread(_objectSpread(_objectSpread({}, defaults), options), dataOptions);
     }
   }]);
 
