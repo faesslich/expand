@@ -157,7 +157,8 @@ var Expand = /*#__PURE__*/function () {
        * multipleDrag: boolean, draggable: boolean, activeClass: boolean, onInit: function(), loop: boolean,
        * gap: number, selector: string, visibleSlides: number, slidesToSlide: number, keyboard: boolean,
        * onChange: function(), cssCustomPath: string, triggerDistance: number, centerMode: boolean,
-       * itemSelector: string, rtl: boolean, autoplay: number, easeMode: string, arrowsVisible: number
+       * itemSelector: string, rtl: boolean, autoplay: number, easeMode: string, arrowsVisible: boolean,
+       * pagination: boolean, paginationVisible: boolean
      * }
    * }
    */
@@ -842,7 +843,7 @@ var Expand = /*#__PURE__*/function () {
     value: function arrowsInit() {
       var _this14 = this;
 
-      if (this.arrowsVisible >= 1 && this.config.arrows) {
+      if (this.arrowsVisible === true && this.config.arrows) {
         this.prevSelector = document.createElement('button');
         this.prevSelector.setAttribute('class', this.config.prevArrowClass);
         this.prevSelector.innerHTML = this.config.prevArrowInner;
@@ -861,7 +862,7 @@ var Expand = /*#__PURE__*/function () {
     }
     /**
      * sets visibility of arrows based on viewport
-     * (fixed number or object value for responsive changes)
+     * (boolean or object value for responsive changes)
      */
 
   }, {
@@ -869,10 +870,10 @@ var Expand = /*#__PURE__*/function () {
     value: function arrowsVisibility() {
       var _this15 = this;
 
-      if (typeof this.config.arrowsVisible === 'number') {
+      if (typeof this.config.arrowsVisible === 'boolean') {
         this.arrowsVisible = this.config.arrowsVisible;
       } else if (_typeof(this.config.arrowsVisible) === 'object') {
-        this.arrowsVisible = 1;
+        this.arrowsVisible = true;
         Object.keys(this.config.arrowsVisible).forEach(function (key) {
           if (window.innerWidth >= key) {
             _this15.arrowsVisible = _this15.config.arrowsVisible[key];
@@ -1184,7 +1185,7 @@ var Expand = /*#__PURE__*/function () {
         autoplay: 0,
         autoplayDuration: 3000,
         arrows: false,
-        arrowsVisible: 1,
+        arrowsVisible: true,
         prevArrowClass: 'expand-js--prev',
         nextArrowClass: 'expand-js--next',
         prevArrowInner: '‹',

@@ -50,8 +50,8 @@ const responsiveArrowNavDemo = new Expand({
   },
   arrows: true,
   arrowsVisible: {
-    100: 0,
-    1024: 1
+    100: false,
+    1024: true
   }
 });
 
@@ -70,8 +70,8 @@ const customArrowNavDemo = new Expand({
   },
   arrows: true,
   arrowsVisible: {
-    100: 0,
-    1024: 1
+    100: false,
+    1024: true
   },
   prevArrowClass: 'expand-js--prev expand-custom-arrows',
   nextArrowClass: 'expand-js--next expand-custom-arrows',
@@ -94,8 +94,8 @@ const paginationDemo = new Expand({
   },
   arrows: true,
   arrowsVisible: {
-    100: 0,
-    1024: 1
+    100: false,
+    1024: true
   },
   pagination: true,
   // paginationVisible: true,
@@ -225,9 +225,9 @@ const featureSeptionDemo = new Expand({
   autoplayDuration: 5000,
   arrows: true,
   arrowsVisible: {
-    100: 0,
-    1024: 1,
-    1920: 0
+    100: false,
+    1024: true,
+    1920: false
   },
   prevArrowClass: 'expand-js--prev expand-custom-arrows',
   nextArrowClass: 'expand-js--next expand-custom-arrows',
@@ -328,8 +328,8 @@ const externalNavDemo = new Expand({
   },
   arrows: true,
   arrowsVisible: {
-    100: 0,
-    1024: 1
+    100: false,
+    1024: true
   }
 });
 
