@@ -110,7 +110,7 @@ export default class Expand {
       };
 
       // add event handlers
-      window.addEventListener('resize', this.resizeHandler);
+      window.addEventListener('resize', this.resizeHandler, { passive: false });
       this.selector.addEventListener('click', this.clickHandler, { passive: false });
       this.selector.addEventListener('touchstart', this.touchstartHandler, { passive: false });
       this.selector.addEventListener('touchend', this.touchendHandler, { passive: false });
@@ -149,10 +149,12 @@ export default class Expand {
       this.keyboardNavigation();
     }
 
+    // add active classes to slider
     if (this.config.useCssFile && this.config.activeClass) {
       this.activeClass();
     }
 
+    // add pagination to slider
     if (this.config.pagination) {
       this.paginationVisibility();
       this.paginationInit();
@@ -172,19 +174,22 @@ export default class Expand {
 
     this.slideItemWrapper = document.createElement('div');
     this.slideItemWrapper.classList.add('expand-js');
+
     // inline css or with classes for more customizability
     if (this.config.useCssFile) {
       this.slideItemWrapper.classList.add('-hidden');
+
       if (this.config.rtl) {
         this.slideItemWrapper.classList.add('-rtl');
       }
+
+      if (this.config.pagination) {
+        this.slideItemWrapper.classList.add('-is-pagination');
+      }
+
     } else {
       this.slideItemWrapper.style.overflow = 'hidden';
       this.slideItemWrapper.style.direction = this.config.rtl ? 'rtl' : 'ltr'; // rtl or ltr
-    }
-
-    if (this.config.pagination) {
-      this.slideItemWrapper.classList.add('-is-pagination');
     }
 
     // Create frame and apply styling
@@ -230,10 +235,6 @@ export default class Expand {
 
     // Go to currently active slide after initial build
     this.slideToCurrent();
-
-    if (this.config.useCssFile && this.config.activeClass) {
-      this.activeClass();
-    }
   }
 
   /**
@@ -328,12 +329,7 @@ export default class Expand {
     if (curSlideCheck !== this.curSlide) {
       this.slideToCurrent(this.config.loop);
       this.config.onChange.call(this);
-
-      if (delay && cb) {
-        setTimeout(()=> { cb.call(this); }, delay);
-      } else if (!delay && cb) {
-        cb.call(this);
-      }
+      this.callbackHandler(cb, delay);
     }
   }
 
@@ -381,12 +377,7 @@ export default class Expand {
     if (curSlideCheck !== this.curSlide) {
       this.slideToCurrent(this.config.loop);
       this.config.onChange.call(this);
-
-      if (delay && cb) {
-        setTimeout(()=> { cb.call(this); }, delay);
-      } else if (!delay && cb) {
-        cb.call(this);
-      }
+      this.callbackHandler(cb, delay);
     }
   }
 
@@ -425,12 +416,7 @@ export default class Expand {
     if (curSlideCheck !== this.curSlide) {
       this.slideToCurrent();
       this.config.onChange.call(this);
-
-      if (delay && cb) {
-        setTimeout(()=> { cb.call(this); }, delay);
-      } else if (!delay && cb) {
-        cb.call(this);
-      }
+      this.callbackHandler(cb, delay);
     }
   }
 
@@ -502,8 +488,9 @@ export default class Expand {
     }
     this.selectorWidth = this.selector.offsetWidth;
 
+    this.sliderContainerCreate();
+
     if (this.config.arrows) {
-      this.sliderContainerCreate();
       this.arrowsVisibility();
       this.arrowsInit();
     }
@@ -519,7 +506,9 @@ export default class Expand {
     }
   }
 
-
+  /**
+   * small method to react on stopping with dragging
+   */
   stopDragging() {
     this.drag = {
       startXAxis: 0,
@@ -549,12 +538,7 @@ export default class Expand {
 
     // build a frame and slide to a curSlide
     this.sliderContainerCreate();
-
-    if (delay && cb) {
-      setTimeout(()=> { cb.call(this); }, delay);
-    } else if (!delay && cb) {
-      cb.call(this);
-    }
+    this.callbackHandler(cb, delay);
   }
 
 
@@ -568,12 +552,7 @@ export default class Expand {
   insertElem(item, index, cb, delay) {
     this.innerItems.splice(index, 0, item);
     this.sliderContainerCreate();
-
-    if (delay && cb) {
-      setTimeout(()=> { cb.call(this); }, delay);
-    } else if (!delay && cb) {
-      cb.call(this);
-    }
+    this.callbackHandler(cb, delay);
   }
 
 
@@ -585,12 +564,7 @@ export default class Expand {
    */
   prependElem(item, cb, delay) {
     this.insertElem(item, 0);
-
-    if (delay && cb) {
-      setTimeout(()=> { cb.call(this); }, delay);
-    } else if (!delay && cb) {
-      cb.call(this);
-    }
+    this.callbackHandler(cb, delay);
   }
 
 
@@ -602,12 +576,7 @@ export default class Expand {
    */
   appendElem(item, cb, delay) {
     this.insertElem(item, this.innerItems.length + 1);
-
-    if (delay && cb) {
-      setTimeout(()=> { cb.call(this); }, delay);
-    } else if (!delay && cb) {
-      cb.call(this);
-    }
+    this.callbackHandler(cb, delay);
   }
 
 
@@ -819,7 +788,22 @@ export default class Expand {
 
 
   /**
+   * callback handler
+   * @param callback
+   * @param delay
+   */
+  callbackHandler(callback, delay) {
+    if (delay && callback) {
+      setTimeout(()=> { callback.call(this); }, delay);
+    } else if (!delay && callback) {
+      callback.call(this);
+    }
+  }
+
+
+  /**
    * click event handler
+   * @param e
    */
   clickHandler(e) {
     // prevent clicking link on dragging
@@ -830,8 +814,10 @@ export default class Expand {
     this.drag.preventClick = false;
   }
 
+
   /**
    * mousedown event handler
+   * @param e
    */
   mousedownHandler(e) {
     e.preventDefault();
@@ -843,6 +829,7 @@ export default class Expand {
 
   /**
    * mouseup event handler
+   * @param e
    */
   mouseupHandler(e) {
     e.stopPropagation();
@@ -858,6 +845,7 @@ export default class Expand {
 
   /**
    * mousemove event handler
+   * @param e
    */
   mousemoveHandler(e) {
     e.preventDefault();
@@ -883,6 +871,7 @@ export default class Expand {
 
   /**
    * mouseleave event handler
+   * @param e
    */
   mouseleaveHandler(e) {
     if (this.pointerDown) {
@@ -899,6 +888,7 @@ export default class Expand {
 
   /**
    * touchstart event handler
+   * @param e
    */
   touchstartHandler(e) {
     e.stopPropagation();
@@ -910,6 +900,7 @@ export default class Expand {
 
   /**
    * touchend event handler
+   * @param e
    */
   touchendHandler(e) {
     e.stopPropagation();
@@ -924,6 +915,7 @@ export default class Expand {
 
   /**
    * touchmove event handler
+   * @param e
    */
   touchmoveHandler(e) {
     e.stopPropagation();
@@ -948,6 +940,7 @@ export default class Expand {
       this.slideItem.style.transform = `translate3d(${(this.config.rtl ? 1 : -1) * offset}px, 0, 0)`;
     }
   }
+
 
   /**
    * destroy method
@@ -976,11 +969,7 @@ export default class Expand {
       this.selector.innerHTML = '';
       this.selector.appendChild(slides).removeAttribute('style');
     }
-
-    if (delay && cb) {
-      setTimeout(()=> { cb.call(this); }, delay);
-    } else if (!delay && cb) {
-      cb.call(this);
-    }
+    this.callbackHandler(cb, delay);
   }
+
 }

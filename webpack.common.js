@@ -2,7 +2,6 @@ const path = require('path');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const UnminifiedWebpackPlugin = require('unminified-webpack-plugin');
 
-
 module.exports = {
   entry: ['./src/expand.js', './src/expand.scss'],
   output: {
@@ -14,6 +13,14 @@ module.exports = {
     umdNamedDefine: true
   },
   optimization: {
+    minimize: true,
+    minimizer: [
+      new UglifyJsPlugin({
+        test: /\.js(\?.*)?$/i,
+        sourceMap: true,
+        extractComments: true
+      })
+    ]
   },
   module: {
     rules: [

@@ -185,7 +185,9 @@ var Expand = /*#__PURE__*/function () {
           preventClick: false
         }; // add event handlers
 
-        window.addEventListener('resize', this.resizeHandler);
+        window.addEventListener('resize', this.resizeHandler, {
+          passive: false
+        });
         this.selector.addEventListener('click', this.clickHandler, {
           passive: false
         });
@@ -237,11 +239,13 @@ var Expand = /*#__PURE__*/function () {
 
       if (this.config.keyboard) {
         this.keyboardNavigation();
-      }
+      } // add active classes to slider
+
 
       if (this.config.useCssFile && this.config.activeClass) {
         this.activeClass();
-      }
+      } // add pagination to slider
+
 
       if (this.config.pagination) {
         this.paginationVisibility();
@@ -269,13 +273,13 @@ var Expand = /*#__PURE__*/function () {
         if (this.config.rtl) {
           this.slideItemWrapper.classList.add('-rtl');
         }
+
+        if (this.config.pagination) {
+          this.slideItemWrapper.classList.add('-is-pagination');
+        }
       } else {
         this.slideItemWrapper.style.overflow = 'hidden';
         this.slideItemWrapper.style.direction = this.config.rtl ? 'rtl' : 'ltr'; // rtl or ltr
-      }
-
-      if (this.config.pagination) {
-        this.slideItemWrapper.classList.add('-is-pagination');
       } // Create frame and apply styling
 
 
@@ -323,10 +327,6 @@ var Expand = /*#__PURE__*/function () {
       this.selector.appendChild(this.slideItemWrapper); // Go to currently active slide after initial build
 
       this.slideToCurrent();
-
-      if (this.config.useCssFile && this.config.activeClass) {
-        this.activeClass();
-      }
     }
     /**
      * Slider item creation
@@ -390,8 +390,6 @@ var Expand = /*#__PURE__*/function () {
   }, {
     key: "prevSlide",
     value: function prevSlide() {
-      var _this3 = this;
-
       var countSlides = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
       var cb = arguments.length > 1 ? arguments[1] : undefined;
       var delay = arguments.length > 2 ? arguments[2] : undefined;
@@ -429,14 +427,7 @@ var Expand = /*#__PURE__*/function () {
       if (curSlideCheck !== this.curSlide) {
         this.slideToCurrent(this.config.loop);
         this.config.onChange.call(this);
-
-        if (delay && cb) {
-          setTimeout(function () {
-            cb.call(_this3);
-          }, delay);
-        } else if (!delay && cb) {
-          cb.call(this);
-        }
+        this.callbackHandler(cb, delay);
       }
     }
     /**
@@ -449,8 +440,6 @@ var Expand = /*#__PURE__*/function () {
   }, {
     key: "nextSlide",
     value: function nextSlide() {
-      var _this4 = this;
-
       var countSlides = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
       var cb = arguments.length > 1 ? arguments[1] : undefined;
       var delay = arguments.length > 2 ? arguments[2] : undefined;
@@ -488,14 +477,7 @@ var Expand = /*#__PURE__*/function () {
       if (curSlideCheck !== this.curSlide) {
         this.slideToCurrent(this.config.loop);
         this.config.onChange.call(this);
-
-        if (delay && cb) {
-          setTimeout(function () {
-            cb.call(_this4);
-          }, delay);
-        } else if (!delay && cb) {
-          cb.call(this);
-        }
+        this.callbackHandler(cb, delay);
       }
     }
     /**
@@ -526,8 +508,6 @@ var Expand = /*#__PURE__*/function () {
   }, {
     key: "goToSlide",
     value: function goToSlide(index, cb, delay) {
-      var _this5 = this;
-
       if (this.innerItems.length <= this.visibleSlides) {
         return;
       }
@@ -538,14 +518,7 @@ var Expand = /*#__PURE__*/function () {
       if (curSlideCheck !== this.curSlide) {
         this.slideToCurrent();
         this.config.onChange.call(this);
-
-        if (delay && cb) {
-          setTimeout(function () {
-            cb.call(_this5);
-          }, delay);
-        } else if (!delay && cb) {
-          cb.call(this);
-        }
+        this.callbackHandler(cb, delay);
       }
     }
     /**
@@ -556,7 +529,7 @@ var Expand = /*#__PURE__*/function () {
   }, {
     key: "slideToCurrent",
     value: function slideToCurrent(isTransition) {
-      var _this6 = this;
+      var _this3 = this;
 
       var curSlide = this.config.loop ? this.curSlide + this.visibleSlides : this.curSlide;
       var offset = (this.config.rtl ? 1 : -1) * curSlide * (this.selectorWidth / this.visibleSlides) + (this.config.gap ? this.config.gap : 0);
@@ -564,9 +537,9 @@ var Expand = /*#__PURE__*/function () {
       if (isTransition) {
         requestAnimationFrame(function () {
           requestAnimationFrame(function () {
-            _this6.isTransition();
+            _this3.isTransition();
 
-            _this6.slideItem.style.transform = "translate3d(".concat(offset + _this6.config.gap, "px, 0, 0)");
+            _this3.slideItem.style.transform = "translate3d(".concat(offset + _this3.config.gap, "px, 0, 0)");
           });
         });
       } else {
@@ -616,9 +589,9 @@ var Expand = /*#__PURE__*/function () {
       }
 
       this.selectorWidth = this.selector.offsetWidth;
+      this.sliderContainerCreate();
 
       if (this.config.arrows) {
-        this.sliderContainerCreate();
         this.arrowsVisibility();
         this.arrowsInit();
       }
@@ -633,6 +606,10 @@ var Expand = /*#__PURE__*/function () {
         this.paginationUpdate();
       }
     }
+    /**
+     * small method to react on stopping with dragging
+     */
+
   }, {
     key: "stopDragging",
     value: function stopDragging() {
@@ -654,8 +631,6 @@ var Expand = /*#__PURE__*/function () {
   }, {
     key: "remove",
     value: function remove(index, cb, delay) {
-      var _this7 = this;
-
       var lowerIndex = index < this.curSlide;
       var lastItem = this.curSlide + this.visibleSlides - 1 === index;
 
@@ -666,14 +641,7 @@ var Expand = /*#__PURE__*/function () {
       this.innerItems.splice(index, 1); // build a frame and slide to a curSlide
 
       this.sliderContainerCreate();
-
-      if (delay && cb) {
-        setTimeout(function () {
-          cb.call(_this7);
-        }, delay);
-      } else if (!delay && cb) {
-        cb.call(this);
-      }
+      this.callbackHandler(cb, delay);
     }
     /**
      * Insert item method
@@ -686,18 +654,9 @@ var Expand = /*#__PURE__*/function () {
   }, {
     key: "insertElem",
     value: function insertElem(item, index, cb, delay) {
-      var _this8 = this;
-
       this.innerItems.splice(index, 0, item);
       this.sliderContainerCreate();
-
-      if (delay && cb) {
-        setTimeout(function () {
-          cb.call(_this8);
-        }, delay);
-      } else if (!delay && cb) {
-        cb.call(this);
-      }
+      this.callbackHandler(cb, delay);
     }
     /**
      * Prepend item method
@@ -709,17 +668,8 @@ var Expand = /*#__PURE__*/function () {
   }, {
     key: "prependElem",
     value: function prependElem(item, cb, delay) {
-      var _this9 = this;
-
       this.insertElem(item, 0);
-
-      if (delay && cb) {
-        setTimeout(function () {
-          cb.call(_this9);
-        }, delay);
-      } else if (!delay && cb) {
-        cb.call(this);
-      }
+      this.callbackHandler(cb, delay);
     }
     /**
      * Append item method
@@ -731,17 +681,8 @@ var Expand = /*#__PURE__*/function () {
   }, {
     key: "appendElem",
     value: function appendElem(item, cb, delay) {
-      var _this10 = this;
-
       this.insertElem(item, this.innerItems.length + 1);
-
-      if (delay && cb) {
-        setTimeout(function () {
-          cb.call(_this10);
-        }, delay);
-      } else if (!delay && cb) {
-        cb.call(this);
-      }
+      this.callbackHandler(cb, delay);
     }
     /**
      * Autoplay method
@@ -750,10 +691,10 @@ var Expand = /*#__PURE__*/function () {
   }, {
     key: "autoPlay",
     value: function autoPlay() {
-      var _this11 = this;
+      var _this4 = this;
 
       setInterval(function () {
-        return _this11.nextSlide();
+        return _this4.nextSlide();
       }, this.config.autoplayDuration);
     }
     /**
@@ -763,7 +704,7 @@ var Expand = /*#__PURE__*/function () {
   }, {
     key: "paginationInit",
     value: function paginationInit() {
-      var _this12 = this;
+      var _this5 = this;
 
       if (this.paginationVisible === true && this.config.pagination) {
         var availableItems = this.innerItems.length;
@@ -773,19 +714,19 @@ var Expand = /*#__PURE__*/function () {
         this.paginationContainer.classList.add('expand-pagination');
 
         var _loop = function _loop(i) {
-          var jumpTo = (i + 1) * visibleSlides - visibleSlides > _this12.innerItems.length ? _this12.innerItems.length : (i + 1) * visibleSlides - visibleSlides;
-          _this12.paginationItem = document.createElement('span');
+          var jumpTo = (i + 1) * visibleSlides - visibleSlides > _this5.innerItems.length ? _this5.innerItems.length : (i + 1) * visibleSlides - visibleSlides;
+          _this5.paginationItem = document.createElement('span');
 
-          _this12.paginationItem.classList.add('pagination-item');
+          _this5.paginationItem.classList.add('pagination-item');
 
-          _this12.paginationItem.dataset.pagination = '' + (i + 1);
-          _this12.paginationItem.innerHTML = _this12.paginationItem.dataset.pagination;
+          _this5.paginationItem.dataset.pagination = '' + (i + 1);
+          _this5.paginationItem.innerHTML = _this5.paginationItem.dataset.pagination;
 
-          _this12.paginationItem.addEventListener('click', function () {
-            return _this12.goToSlide(jumpTo);
+          _this5.paginationItem.addEventListener('click', function () {
+            return _this5.goToSlide(jumpTo);
           });
 
-          _this12.paginationContainer.appendChild(_this12.paginationItem);
+          _this5.paginationContainer.appendChild(_this5.paginationItem);
         };
 
         for (var i = 0; i < paginationCount; i += 1) {
@@ -823,7 +764,7 @@ var Expand = /*#__PURE__*/function () {
   }, {
     key: "paginationVisibility",
     value: function paginationVisibility() {
-      var _this13 = this;
+      var _this6 = this;
 
       if (typeof this.config.paginationVisible === 'boolean') {
         this.paginationVisible = this.config.paginationVisible;
@@ -831,7 +772,7 @@ var Expand = /*#__PURE__*/function () {
         this.paginationVisible = true;
         Object.keys(this.config.paginationVisible).forEach(function (key) {
           if (window.innerWidth >= Number(key)) {
-            _this13.paginationVisible = _this13.config.paginationVisible[Number(key)];
+            _this6.paginationVisible = _this6.config.paginationVisible[Number(key)];
           }
         });
       }
@@ -843,7 +784,7 @@ var Expand = /*#__PURE__*/function () {
   }, {
     key: "arrowsInit",
     value: function arrowsInit() {
-      var _this14 = this;
+      var _this7 = this;
 
       if (this.arrowsVisible === true && this.config.arrows) {
         this.prevSelector = document.createElement('button');
@@ -855,10 +796,10 @@ var Expand = /*#__PURE__*/function () {
         this.nextSelector.innerHTML = this.config.nextArrowInner;
         this.selector.appendChild(this.nextSelector);
         this.prevSelector.addEventListener('click', function () {
-          return _this14.prevSlide();
+          return _this7.prevSlide();
         });
         this.nextSelector.addEventListener('click', function () {
-          return _this14.nextSlide();
+          return _this7.nextSlide();
         });
       }
     }
@@ -870,7 +811,7 @@ var Expand = /*#__PURE__*/function () {
   }, {
     key: "arrowsVisibility",
     value: function arrowsVisibility() {
-      var _this15 = this;
+      var _this8 = this;
 
       if (typeof this.config.arrowsVisible === 'boolean') {
         this.arrowsVisible = this.config.arrowsVisible;
@@ -878,7 +819,7 @@ var Expand = /*#__PURE__*/function () {
         this.arrowsVisible = true;
         Object.keys(this.config.arrowsVisible).forEach(function (key) {
           if (window.innerWidth >= Number(key)) {
-            _this15.arrowsVisible = _this15.config.arrowsVisible[Number(key)];
+            _this8.arrowsVisible = _this8.config.arrowsVisible[Number(key)];
           }
         });
       }
@@ -890,15 +831,15 @@ var Expand = /*#__PURE__*/function () {
   }, {
     key: "keyboardNavigation",
     value: function keyboardNavigation() {
-      var _this16 = this;
+      var _this9 = this;
 
       document.addEventListener('keydown', function (e) {
         if (e.key === 'ArrowLeft') {
-          _this16.prevSlide();
+          _this9.prevSlide();
         }
 
         if (e.key === 'ArrowRight') {
-          _this16.nextSlide();
+          _this9.nextSlide();
         }
       });
     }
@@ -978,7 +919,27 @@ var Expand = /*#__PURE__*/function () {
       }
     }
     /**
+     * callback handler
+     * @param callback
+     * @param delay
+     */
+
+  }, {
+    key: "callbackHandler",
+    value: function callbackHandler(callback, delay) {
+      var _this10 = this;
+
+      if (delay && callback) {
+        setTimeout(function () {
+          callback.call(_this10);
+        }, delay);
+      } else if (!delay && callback) {
+        callback.call(this);
+      }
+    }
+    /**
      * click event handler
+     * @param e
      */
 
   }, {
@@ -994,6 +955,7 @@ var Expand = /*#__PURE__*/function () {
     }
     /**
      * mousedown event handler
+     * @param e
      */
 
   }, {
@@ -1006,6 +968,7 @@ var Expand = /*#__PURE__*/function () {
     }
     /**
      * mouseup event handler
+     * @param e
      */
 
   }, {
@@ -1024,6 +987,7 @@ var Expand = /*#__PURE__*/function () {
     }
     /**
      * mousemove event handler
+     * @param e
      */
 
   }, {
@@ -1048,6 +1012,7 @@ var Expand = /*#__PURE__*/function () {
     }
     /**
      * mouseleave event handler
+     * @param e
      */
 
   }, {
@@ -1065,6 +1030,7 @@ var Expand = /*#__PURE__*/function () {
     }
     /**
      * touchstart event handler
+     * @param e
      */
 
   }, {
@@ -1077,6 +1043,7 @@ var Expand = /*#__PURE__*/function () {
     }
     /**
      * touchend event handler
+     * @param e
      */
 
   }, {
@@ -1094,6 +1061,7 @@ var Expand = /*#__PURE__*/function () {
     }
     /**
      * touchmove event handler
+     * @param e
      */
 
   }, {
@@ -1126,8 +1094,6 @@ var Expand = /*#__PURE__*/function () {
   }, {
     key: "destroy",
     value: function destroy() {
-      var _this17 = this;
-
       var restore = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
       var cb = arguments.length > 1 ? arguments[1] : undefined;
       var delay = arguments.length > 2 ? arguments[2] : undefined;
@@ -1153,13 +1119,7 @@ var Expand = /*#__PURE__*/function () {
         this.selector.appendChild(slides).removeAttribute('style');
       }
 
-      if (delay && cb) {
-        setTimeout(function () {
-          cb.call(_this17);
-        }, delay);
-      } else if (!delay && cb) {
-        cb.call(this);
-      }
+      this.callbackHandler(cb, delay);
     }
   }], [{
     key: "settingsOverride",

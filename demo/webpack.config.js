@@ -14,13 +14,11 @@ module.exports = {
     umdNamedDefine: true
   },
   optimization: {
+    minimize: true,
     minimizer: [
       new UglifyJsPlugin({
-        uglifyOptions: {
-          output: {
-            comments: false
-          }
-        }
+        test: /\.js(\?.*)?$/i,
+        sourceMap: true
       })
     ]
   },
@@ -67,7 +65,6 @@ module.exports = {
     ]
   },
   plugins: [
-    new UglifyJsPlugin(),
     new UnminifiedWebpackPlugin()
   ]
 };
