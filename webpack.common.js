@@ -8,7 +8,7 @@ module.exports = {
   output: {
     path: path.join(__dirname, 'dist'),
     filename: 'expand.min.js',
-    publicPath: '/dist/',
+    publicPath: '/assets',
     library: 'Expand',
     libraryTarget: 'umd',
     umdNamedDefine: true
@@ -38,7 +38,7 @@ module.exports = {
           {
             loader: 'file-loader',
             options: {
-              name: '[name].min.css',
+              name: '[name].min.css'
             }
           },
           {

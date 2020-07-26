@@ -95,16 +95,66 @@ header {
 .example-slider, .example-slider2 {
   max-width: 120rem;
   margin: 0 auto;
-  box-shadow: .1rem 0 0 0 #000, -.1rem 0 0 0 #000;
+
+  .expand-js--container {
+    &.-is-center-mode {
+      .expand-js--item {
+        opacity: .5;
+
+        &-center { opacity: 1; }
+      }
+
+      &.-is-center-range {
+        .expand-js--item {
+          opacity: .2;
+
+          &-center { opacity: 1; }
+
+          &-half-center { opacity: .8; }
+
+          &-quarter-center { opacity: .5; }
+
+        }
+      }
+    }
+  }
 
   .expand-js--item {
     > div {
+      position: relative;
       text-align: center;
       padding: 6rem 1rem;
+      margin: 0 .5rem;
       background: #ffa500;
       border: 1px solid #000;
       font-size: 6rem;
+
+      &::before {
+        position: absolute;
+        right: 20px;
+        bottom: 15px;
+        width: calc(100% - 40px);
+        text-align: center;
+        font-size: 14px;
+      }
+      &::after {
+        position: absolute;
+        right: 20px;
+        top: 15px;
+        width: calc(100% - 40px);
+        text-align: center;
+        font-size: 14px;
+      }
     }
+
+    &-active > div::before { content: 'active'; }
+
+    &-center > div::after { content: 'center'; }
+
+    &-half-center > div::after { content: 'half-center'; }
+
+    &-quarter-center > div::after { content: 'quarter-center'; }
+
   }
 }
 
