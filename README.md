@@ -2,8 +2,8 @@
 
 ## Expand - the lightweight pure JS carousel/slider
 
-Expand is an dependency free vanilla js slider/carousel. It was build as an alternative for the often used jQuery carousel 
-"slick" but without the need of jQuery as dependency and the advantages of object oriented programming.
+Expand is a dependency free vanilla js slider/carousel. It was built as an alternative for the often used jQuery carousel 
+"slick" but without depending on jQuery and utilizing the advantages of object oriented programming.
 
 #### Quick facts:
 - 100% free and open source (personal/commercial)
@@ -151,7 +151,7 @@ const customExpandSelectorDemo = new Expand(
 | `selector` | (string or DOM node) | `.expand-js-outer` | _Option to add a custom selector for your **slider container**._ |
 | `itemSelector` | (string or DOM node) | `.expand-js--item` | _Option to add a custom selector for your **items**._ |
 | `visibleSlides` | (number or object) | `1` | _Select how many slides are visible. Static (number) or responsive (object)._ |
-| `useCssFile` | (boolean) |  `1`  | _Determine if CSS classes should be used or if inline-styles are the way to go. Not using CSS is not recommended especially for advanced usage._ |
+| `useCssFile` | (boolean) |  `true`  | _Determine if CSS classes should be used or if inline-styles are the way to go. Not using CSS is not recommended especially for advanced usage._ |
 | `cssCustomPath` | (string) | ` ` | _Add a path to the CSS file that should be used. (optional)_ |
 | `startIndex` | (number) | `1` | _Select at which slide the slider/carousel should start on initialization._ |
 | `draggable` | (boolean) | `true` | _Select if slider/carousel should be draggable._ |
