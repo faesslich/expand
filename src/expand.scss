@@ -55,11 +55,21 @@
   padding-top: 1rem;
   text-align: center;
 
-  .pagination-item {
+  .expand-pagination--item {
     display: inline-block;
     padding: .5rem;
     cursor: pointer;
 
     &.active { background: #ddd; }
+
+    &.expand-pagination--item--dots {
+      width: 1rem;
+      height: 1rem;
+      margin: 0 .5rem;
+      background: #ddd;
+      border-radius: 50%;
+
+      &.active { background: #999; }
+    }
   }
 }

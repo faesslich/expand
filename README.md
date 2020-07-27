@@ -131,6 +131,10 @@ const customExpandSelectorDemo = new Expand(
   centerModeRange: false,
   pagination: false,
   paginationVisible: true,
+  paginationType: '',
+  paginationContainer: 'expand-pagination',
+  paginationItemSelector: '',
+  paginationItemActiveClass: 'active',
   autoplay: false,
   autoplayDuration: 3000,
   arrows: false,
@@ -148,37 +152,41 @@ const customExpandSelectorDemo = new Expand(
 
 | Key | Type | Default | Description |
 | --- | ---- | ------- | ----------- |
-| `selector` | (string or DOM node) | `.expand-js-outer` | _Option to add a custom selector for your **slider container**._ |
-| `itemSelector` | (string or DOM node) | `.expand-js--item` | _Option to add a custom selector for your **items**._ |
-| `visibleSlides` | (number or object) | `1` | _Select how many slides are visible. Static (number) or responsive (object)._ |
-| `useCssFile` | (boolean) |  `true`  | _Determine if CSS classes should be used or if inline-styles are the way to go. Not using CSS is not recommended especially for advanced usage._ |
-| `cssCustomPath` | (string) | ` ` | _Add a path to the CSS file that should be used. (optional)_ |
-| `startIndex` | (number) | `1` | _Select at which slide the slider/carousel should start on initialization._ |
-| `draggable` | (boolean) | `true` | _Select if slider/carousel should be draggable._ |
-| `multipleDrag` | (boolean) | `true` | _Select if slider/carousel should be able to slide over multiple slides._ |
-| `triggerDistance` | (number) | `20` | _Select the trigger distance on dragging a slide._ |
-| `loop` | (boolean) | `true` | _Select if slider/carousel should loop._ |
-| `rtl` | (boolean) | `false` | _Select if slider/carousel should go right-to-left._ |
-| `duration` | (number) | `500` | _Change the speed of the slides change._ |
-| `easeMode` | (string) | `ease-out` | _Change the ease mode. But it's not recommended or needed anyway._ |
-| `slidesToSlide` | (number) | `1` | _Select how many slided should slide on e.g. `nextSlide` event. Note: Not working if `multipleDrag` is set to `false`_ |
-| `activeClass` | (boolean) | `true` | _Select if the visible slides should get an active class._ |
-| `centerMode` | (boolean) | `false` | _Select if the slides in the middle should get an center class for highlighting._ |
-| `centerModeRange` | (boolean) | `false` | _Select if the slides next to the centered slide should get an extra class for highlighting._ |
-| `pagination` | (boolean) | `false` | _Select if slider/carousel should have a pagination._ |
-| `paginationVisible` | (boolean or object) | `true` | _Select if/when pagination should be visible. Static (number) or responsive (object)._ |
-| `autoplay` | (boolean) | `false` | _Select if slider/carousel should have autoplay enabled._ |
-| `autoplayDuration` | (number) | `3000` | _Set the speed of autoplay._ |
-| `arrows` | (boolean) | `false` | _Select if slider/carousel should have an arrows navigation._ |
-| `arrowsVisible` | (boolean or object) | `true` | _Select if/when arrows navigation should be visible. Static (number) or responsive (object)._ |
-| `prevArrowClass` | (string) | `expand-js--prev` | _Changes the class of previous button in arrow navigation._ |
-| `nextArrowClass` | (string) | `expand-js--next` | _Changes the class of next button in arrow navigation._ |
-| `prevArrowInner` | (string) | `‹` | _Changes the innerHTML/innerText of previous button in arrow navigation._ |
-| `nextArrowInner` | (string) | `›` | _Changes the innerHTML/innerText of next button in arrow navigation._ |
-| `gap` | (number) | `0` | _Set a gap at the end of the slider to see a part of the upcoming slide._ |
-| `keyboard` | (boolean) | `false` | _Select of keyboard navigation should be enabled._ |
-| `onInit` | (function) | `() => {}` | _Add a custom method that runs after slider/carousel has been initialized._ |
-| `onChange` | (function) | `() => {}` | _Add a custom method that runs after a slide has changed._ |
+| `selector`                    | (string or DOM node)  | `.expand-js-outer`    | _Option to add a custom selector for your **slider container**._ |
+| `itemSelector`                | (string or DOM node)  | `.expand-js--item`    | _Option to add a custom selector for your **items**._ |
+| `visibleSlides`               | (number or object)    | `1`                   | _Select how many slides are visible. Static (number) or responsive (object)._ |
+| `useCssFile`                  | (boolean)             |  `true`               | _Determine if CSS classes should be used or if inline-styles are the way to go. Not using CSS is not recommended especially for advanced usage._ |
+| `cssCustomPath`               | (string)              | ` `                   | _Add a path to the CSS file that should be used. (optional)_ |
+| `startIndex`                  | (number)              | `1`                   | _Select at which slide the slider/carousel should start on initialization._ |
+| `draggable`                   | (boolean)             | `true`                | _Select if slider/carousel should be draggable._ |
+| `multipleDrag`                | (boolean)             | `true`                | _Select if slider/carousel should be able to slide over multiple slides._ |
+| `triggerDistance`             | (number)              | `20`                  | _Select the trigger distance on dragging a slide._ |
+| `loop`                        | (boolean)             | `true`                | _Select if slider/carousel should loop._ |
+| `rtl`                         | (boolean)             | `false`               | _Select if slider/carousel should go right-to-left._ |
+| `duration`                    | (number)              | `500`                 | _Change the speed of the slides change._ |
+| `easeMode`                    | (string)              | `ease-out`            | _Change the ease mode. But it's not recommended or needed anyway._ |
+| `slidesToSlide`               | (number)              | `1`                   | _Select how many slided should slide on e.g. `nextSlide` event. Note: Not working if `multipleDrag` is set to `false`_ |
+| `activeClass`                 | (boolean)             | `true`                | _Select if the visible slides should get an active class._ |
+| `centerMode`                  | (boolean)             | `false`               | _Select if the slides in the middle should get an center class for highlighting._ |
+| `centerModeRange`             | (boolean)             | `false`               | _Select if the slides next to the centered slide should get an extra class for highlighting._ |
+| `pagination`                  | (boolean)             | `false`               | _Select if slider/carousel should have a pagination._ |
+| `paginationVisible`           | (boolean or object)   | `true`                | _Select if/when pagination should be visible. Static (number) or responsive (object)._ |
+| `paginationType`              | (string)              | ` `                   | _Options: ` ` or `dots` _ |
+| `paginationContainer`         | (string)              | `expand-pagination`   | _Option to add a custom selector for your **pagination container**_ |
+| `paginationItemSelector`      | (string)              | ` `                   | _Option to add a custom selector for your **pagination items**_ |
+| `paginationItemActiveClass`   | (string)              | `active`              | _Option to add a custom selector for your **pagination item active classes**._ |
+| `autoplay`                    | (boolean)             | `false`               | _Select if slider/carousel should have autoplay enabled._ |
+| `autoplayDuration`            | (number)              | `3000`                | _Set the speed of autoplay._ |
+| `arrows`                      | (boolean)             | `false`               | _Select if slider/carousel should have an arrows navigation._ |
+| `arrowsVisible`               | (boolean or object)   | `true`                | _Select if/when arrows navigation should be visible. Static (number) or responsive (object)._ |
+| `prevArrowClass`              | (string)              | `expand-js--prev`     | _Changes the class of previous button in arrow navigation._ |
+| `nextArrowClass`              | (string)              | `expand-js--next`     | _Changes the class of next button in arrow navigation._ |
+| `prevArrowInner`              | (string)              | `‹`                   | _Changes the innerHTML/innerText of previous button in arrow navigation._ |
+| `nextArrowInner`              | (string)              | `›`                   | _Changes the innerHTML/innerText of next button in arrow navigation._ |
+| `gap`                         | (number)              | `0`                   | _Set a gap at the end of the slider to see a part of the upcoming slide._ |
+| `keyboard`                    | (boolean)             | `false`               | _Select of keyboard navigation should be enabled._ |
+| `onInit`                      | (function)            | `() => {}`            | _Add a custom method that runs after slider/carousel has been initialized._ |
+| `onChange`                    | (function)            | `() => {}`            | _Add a custom method that runs after a slide has changed._ |
 
 
 <p><br></p>

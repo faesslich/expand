@@ -85,25 +85,29 @@ const customArrowNavDemo = new Expand({
  * responsive expand with a responsive pagination example
  * @type {Element}
  */
-const paginationSelector = document.querySelector('.expand-pagination-wrapper');
-const paginationDemo = new Expand({
-  selector: paginationSelector,
-  visibleSlides: {
-    768: 2,
-    1024: 3
+const paginationSelector = document.querySelectorAll('.expand-pagination-wrapper');
+for (let i = 0; i < paginationSelector.length; i += 1) {
+  const paginationDemo = new Expand({
+    selector: paginationSelector[i],
+    visibleSlides: {
+      768: 2,
+      1024: 3
+    },
+    arrows: true,
+    arrowsVisible: {
+      100: false,
+      1024: true
+    },
+    pagination: true,
+    // paginationVisible: true,
+    paginationVisible: {
+      0: false,
+      320: true
+    }
   },
-  arrows: true,
-  arrowsVisible: {
-    100: false,
-    1024: true
-  },
-  pagination: true,
-  // paginationVisible: true,
-  paginationVisible: {
-    0: false,
-    320: true
-  }
-});
+  // dataOptions
+  JSON.parse(paginationSelector[i].dataset.options));
+}
 
 
 

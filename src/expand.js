@@ -50,7 +50,8 @@ export default class Expand {
        * gap: number, selector: string, visibleSlides: number, slidesToSlide: number, keyboard: boolean,
        * onChange: function(), cssCustomPath: string, triggerDistance: number, centerMode: boolean,
        * itemSelector: string, rtl: boolean, autoplay: boolean, easeMode: string, arrowsVisible: boolean,
-       * pagination: boolean, paginationVisible: boolean
+       * pagination: boolean, paginationVisible: boolean, paginationType: string, paginationContainer: string,
+       * paginationItemSelector: string, paginationItemActiveClass: string
      * }
    * }
    */
@@ -75,6 +76,10 @@ export default class Expand {
       centerModeRange: false,
       pagination: false,
       paginationVisible: true,
+      paginationType: '',
+      paginationContainer: 'expand-pagination',
+      paginationItemSelector: '',
+      paginationItemActiveClass: 'active',
       autoplay: false,
       autoplayDuration: 3000,
       arrows: false,
@@ -248,8 +253,6 @@ export default class Expand {
       itemContainer.classList.add(this.config.itemSelector.replace('.', ''));
       if (this.config.rtl) {
         itemContainer.classList.add('f-right');
-      } else {
-        itemContainer.classList.add('f-left');
       }
     } else {
       itemContainer.style.cssFloat = this.config.rtl ? 'right' : 'left';
@@ -598,7 +601,13 @@ export default class Expand {
       const paginationCount = Math.ceil(availableItems / visibleSlides);
 
       this.paginationContainer = document.createElement('div');
-      this.paginationContainer.classList.add('expand-pagination');
+      this.paginationContainer.classList.add(this.config.paginationContainer);
+
+      this.paginationItemSelector = (
+        this.config.paginationItemSelector
+          ? this.config.paginationItemSelector
+          : this.config.paginationContainer + '--item'
+      );
 
       for (let i = 0; i < paginationCount; i += 1) {
         const jumpTo = ((i + 1) * visibleSlides) - visibleSlides > this.innerItems.length
@@ -606,11 +615,18 @@ export default class Expand {
           : ((i + 1) * visibleSlides) - visibleSlides;
 
         this.paginationItem = document.createElement('span');
-        this.paginationItem.classList.add('pagination-item');
-        this.paginationItem.dataset.pagination = '' + (i + 1);
-        this.paginationItem.innerHTML = this.paginationItem.dataset.pagination;
-        this.paginationItem.addEventListener('click', () => this.goToSlide(jumpTo));
+        this.paginationItem.classList.add(this.paginationItemSelector);
+        if (this.config.paginationType === 'dots') {
+          this.paginationItem.classList.add(this.paginationItemSelector + '--dots');
+        }
 
+        this.paginationItem.dataset.pagination = '' + (i + 1);
+
+        if (this.config.paginationType !== 'dots') {
+          this.paginationItem.innerHTML = this.paginationItem.dataset.pagination;
+        }
+
+        this.paginationItem.addEventListener('click', () => this.goToSlide(jumpTo));
         this.paginationContainer.appendChild(this.paginationItem);
       }
 
@@ -624,14 +640,20 @@ export default class Expand {
    */
   paginationUpdate() {
     if (this.paginationVisible === true && this.config.pagination) {
-      const paginationItems = this.selector.querySelectorAll('.pagination-item');
+      this.paginationItemSelector = (
+        this.config.paginationItemSelector
+          ? this.config.paginationItemSelector
+          : this.config.paginationContainer + '--item'
+      );
+
+      const paginationItems = this.selector.querySelectorAll('.' + this.paginationItemSelector);
       const getPaginationItem = Math.ceil(this.curSlide / this.visibleSlides) + 1;
 
       for (let i = 0; i < paginationItems.length; i += 1) {
-        paginationItems[i].classList.remove('active');
+        paginationItems[i].classList.remove(this.config.paginationItemActiveClass);
 
         if (getPaginationItem === Number(paginationItems[i].dataset.pagination)) {
-          paginationItems[i].classList.add('active');
+          paginationItems[i].classList.add(this.config.paginationItemActiveClass);
         }
       }
     }

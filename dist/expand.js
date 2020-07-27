@@ -160,7 +160,8 @@ var Expand = /*#__PURE__*/function () {
        * gap: number, selector: string, visibleSlides: number, slidesToSlide: number, keyboard: boolean,
        * onChange: function(), cssCustomPath: string, triggerDistance: number, centerMode: boolean,
        * itemSelector: string, rtl: boolean, autoplay: boolean, easeMode: string, arrowsVisible: boolean,
-       * pagination: boolean, paginationVisible: boolean
+       * pagination: boolean, paginationVisible: boolean, paginationType: string, paginationContainer: string,
+       * paginationItemSelector: string, paginationItemActiveClass: string
      * }
    * }
    */
@@ -344,8 +345,6 @@ var Expand = /*#__PURE__*/function () {
 
         if (this.config.rtl) {
           itemContainer.classList.add('f-right');
-        } else {
-          itemContainer.classList.add('f-left');
         }
       } else {
         itemContainer.style.cssFloat = this.config.rtl ? 'right' : 'left';
@@ -711,16 +710,24 @@ var Expand = /*#__PURE__*/function () {
         var visibleSlides = this.visibleSlides;
         var paginationCount = Math.ceil(availableItems / visibleSlides);
         this.paginationContainer = document.createElement('div');
-        this.paginationContainer.classList.add('expand-pagination');
+        this.paginationContainer.classList.add(this.config.paginationContainer);
+        this.paginationItemSelector = this.config.paginationItemSelector ? this.config.paginationItemSelector : this.config.paginationContainer + '--item';
 
         var _loop = function _loop(i) {
           var jumpTo = (i + 1) * visibleSlides - visibleSlides > _this5.innerItems.length ? _this5.innerItems.length : (i + 1) * visibleSlides - visibleSlides;
           _this5.paginationItem = document.createElement('span');
 
-          _this5.paginationItem.classList.add('pagination-item');
+          _this5.paginationItem.classList.add(_this5.paginationItemSelector);
+
+          if (_this5.config.paginationType === 'dots') {
+            _this5.paginationItem.classList.add(_this5.paginationItemSelector + '--dots');
+          }
 
           _this5.paginationItem.dataset.pagination = '' + (i + 1);
-          _this5.paginationItem.innerHTML = _this5.paginationItem.dataset.pagination;
+
+          if (_this5.config.paginationType !== 'dots') {
+            _this5.paginationItem.innerHTML = _this5.paginationItem.dataset.pagination;
+          }
 
           _this5.paginationItem.addEventListener('click', function () {
             return _this5.goToSlide(jumpTo);
@@ -744,14 +751,15 @@ var Expand = /*#__PURE__*/function () {
     key: "paginationUpdate",
     value: function paginationUpdate() {
       if (this.paginationVisible === true && this.config.pagination) {
-        var paginationItems = this.selector.querySelectorAll('.pagination-item');
+        this.paginationItemSelector = this.config.paginationItemSelector ? this.config.paginationItemSelector : this.config.paginationContainer + '--item';
+        var paginationItems = this.selector.querySelectorAll('.' + this.paginationItemSelector);
         var getPaginationItem = Math.ceil(this.curSlide / this.visibleSlides) + 1;
 
         for (var i = 0; i < paginationItems.length; i += 1) {
-          paginationItems[i].classList.remove('active');
+          paginationItems[i].classList.remove(this.config.paginationItemActiveClass);
 
           if (getPaginationItem === Number(paginationItems[i].dataset.pagination)) {
-            paginationItems[i].classList.add('active');
+            paginationItems[i].classList.add(this.config.paginationItemActiveClass);
           }
         }
       }
@@ -1144,6 +1152,10 @@ var Expand = /*#__PURE__*/function () {
         centerModeRange: false,
         pagination: false,
         paginationVisible: true,
+        paginationType: '',
+        paginationContainer: 'expand-pagination',
+        paginationItemSelector: '',
+        paginationItemActiveClass: 'active',
         autoplay: false,
         autoplayDuration: 3000,
         arrows: false,
