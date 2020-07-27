@@ -1144,7 +1144,7 @@ var Expand = /*#__PURE__*/function () {
         centerModeRange: false,
         pagination: false,
         paginationVisible: true,
-        autoplay: true,
+        autoplay: false,
         autoplayDuration: 3000,
         arrows: false,
         arrowsVisible: true,
