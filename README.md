@@ -8,7 +8,8 @@ Expand is a dependency free vanilla js slider/carousel. It was built as an alter
 #### Quick facts:
 - 100% free and open source (personal/commercial)
 - only 4kb gzipped
-- modern ES6 javascript but compiled to ES5 for a larger browser compability
+- modern ES6 javascript but compiled to ES5 for a larger browser compatibility
+- available via CDN: https://cdn.jsdelivr.net/gh/faesslich/expand/dist/
 
 <p><br></p>
 
