@@ -102,7 +102,7 @@ export default class Expand {
    * Attaches listeners to required events.
    */
   attachEvents() {
-    // If element is draggable / swipable
+    // If element is draggable / swipeable
     if (this.config.draggable) {
       this.pointerDown = false;
       this.drag = {
@@ -174,44 +174,74 @@ export default class Expand {
    * Build container and slide to current item
    */
   sliderContainerCreate() {
-    const widthItem = this.selectorWidth / this.visibleSlides;
-    const itemWidthCalc = this.config.loop ? (2 * this.visibleSlides) + this.innerItems.length : this.innerItems.length;
+    this.slideItemWrapper = this.createSliderOuterWrapper();
+    this.slidesCollection = this.getSlidesCollection();
+    this.createSliderInnerWrapper();
 
-    this.slideItemWrapper = document.createElement('div');
-    this.slideItemWrapper.classList.add('expand-js');
+    // Add fragment to the frame
+    this.selector.innerHTML = '';
+    this.slideItemWrapper.appendChild(this.sliderInnerWrapper);
+    this.sliderInnerWrapper.appendChild(this.slidesCollection);
+    this.selector.appendChild(this.slideItemWrapper);
 
-    // inline css or with classes for more customizability
-    if (this.config.useCssFile) {
-      this.slideItemWrapper.classList.add('-hidden');
+    // Go to currently active slide after initial build
+    this.slideToCurrent();
+  }
 
-      if (this.config.rtl) {
-        this.slideItemWrapper.classList.add('-rtl');
-      }
 
-      if (this.config.pagination) {
-        this.slideItemWrapper.classList.add('-is-pagination');
-      }
-
-    } else {
-      this.slideItemWrapper.style.overflow = 'hidden';
-      this.slideItemWrapper.style.direction = this.config.rtl ? 'rtl' : 'ltr'; // rtl or ltr
-    }
-
-    // Create frame and apply styling
-    this.slideItem = document.createElement('div');
-    this.slideItem.classList.add('expand-js--container');
-    this.slideItem.style.width = `${widthItem * itemWidthCalc}px`;
+  /**
+   * Create frame and apply styling
+   */
+  createSliderInnerWrapper() {
+    this.sliderInnerWrapper = document.createElement('div');
+    this.sliderInnerWrapper.classList.add('expand-js--container');
+    this.sliderInnerWrapper.style.width = this.getCalculatedItemWidth() + 'px';
     this.isTransition();
 
     if (this.config.centerMode) {
-      this.slideItem.classList.add('-is-center-mode');
+      this.sliderInnerWrapper.classList.add('-is-center-mode');
 
       if (this.config.centerModeRange) {
-        this.slideItem.classList.add('-is-center-range');
+        this.sliderInnerWrapper.classList.add('-is-center-range');
       }
     }
+  }
 
-    // Create a document fragment to put slides into it
+
+  /**
+   *
+   * @returns {HTMLDivElement}
+   */
+  createSliderOuterWrapper() {
+    const slideItemWrapper = document.createElement('div');
+    slideItemWrapper.classList.add('expand-js');
+
+    // inline css or with classes for more customizability
+    if (this.config.useCssFile) {
+      slideItemWrapper.classList.add('-hidden');
+
+      if (this.config.rtl) {
+        slideItemWrapper.classList.add('-rtl');
+      }
+
+      if (this.config.pagination) {
+        slideItemWrapper.classList.add('-is-pagination');
+      }
+
+    } else {
+      slideItemWrapper.style.overflow = 'hidden';
+      slideItemWrapper.style.direction = this.config.rtl ? 'rtl' : 'ltr'; // rtl or ltr
+    }
+
+    return slideItemWrapper;
+  }
+
+
+  /**
+   * Create a document fragment to put slides into it
+   * @returns {DocumentFragment}
+   */
+  getSlidesCollection() {
     const slides = document.createDocumentFragment();
 
     // Loop through the slides, add styling and add them to document fragment
@@ -221,10 +251,12 @@ export default class Expand {
         slides.appendChild(element);
       }
     }
+
     for (let i = 0; i < this.innerItems.length; i += 1) {
       const element = this.createSliderItem(this.innerItems[i]);
       slides.appendChild(element);
     }
+
     if (this.config.loop) {
       for (let i = 0; i < this.visibleSlides; i += 1) {
         const element = this.createSliderItem(this.innerItems[i].cloneNode(true));
@@ -232,15 +264,21 @@ export default class Expand {
       }
     }
 
-    // Add fragment to the frame
-    this.selector.innerHTML = '';
-    this.slideItemWrapper.appendChild(this.slideItem);
-    this.slideItem.appendChild(slides);
-    this.selector.appendChild(this.slideItemWrapper);
-
-    // Go to currently active slide after initial build
-    this.slideToCurrent();
+    return slides;
   }
+
+
+  /**
+   * calculate width for each item
+   * @returns {number}
+   */
+  getCalculatedItemWidth() {
+    const widthItem = this.selectorWidth / this.visibleSlides;
+    const itemWidthCalc = this.config.loop ? (2 * this.visibleSlides) + this.innerItems.length : this.innerItems.length;
+
+    return Number(widthItem * itemWidthCalc);
+  }
+
 
   /**
    * Slider item creation
@@ -297,7 +335,7 @@ export default class Expand {
    * @param delay
    */
   prevSlide(countSlides = 1, cb, delay) {
-    // early return if no slides
+    // early return when there is nothing to slide
     if (this.innerItems.length <= this.visibleSlides) {
       return;
     }
@@ -319,7 +357,7 @@ export default class Expand {
         const dragDistance = this.config.draggable ? this.drag.endXAxis - this.drag.startXAxis : 0;
 
         this.isNotTransition();
-        this.slideItem.style.transform = `translate3d(${offset + dragDistance}px, 0, 0)`;
+        this.sliderInnerWrapper.style.transform = `translate3d(${offset + dragDistance}px, 0, 0)`;
 
         this.curSlide = cloneIndex - countSlides;
       } else {
@@ -368,7 +406,7 @@ export default class Expand {
           + (this.config.gap ? this.config.gap : 0);
         const dragDistance = this.config.draggable ? this.drag.endXAxis - this.drag.startXAxis : 0;
 
-        this.slideItem.style.transform = `translate3d(${offset + dragDistance}px, 0, 0)`;
+        this.sliderInnerWrapper.style.transform = `translate3d(${offset + dragDistance}px, 0, 0)`;
         this.curSlide = cloneIndex + countSlides;
       } else {
         this.curSlide += countSlides;
@@ -389,7 +427,7 @@ export default class Expand {
    * Disable transition on slideItem.
    */
   isNotTransition() {
-    this.slideItem.style.transition = `all 0ms ${this.config.easeMode}`;
+    this.sliderInnerWrapper.style.transition = `all 0ms ${this.config.easeMode}`;
   }
 
 
@@ -397,7 +435,7 @@ export default class Expand {
    * Enable transition on slideItem.
    */
   isTransition() {
-    this.slideItem.style.transition = `all ${this.config.duration}ms ${this.config.easeMode}`;
+    this.sliderInnerWrapper.style.transition = `all ${this.config.duration}ms ${this.config.easeMode}`;
   }
 
 
@@ -437,11 +475,11 @@ export default class Expand {
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           this.isTransition();
-          this.slideItem.style.transform = `translate3d(${offset + this.config.gap}px, 0, 0)`;
+          this.sliderInnerWrapper.style.transform = `translate3d(${offset + this.config.gap}px, 0, 0)`;
         });
       });
     } else {
-      this.slideItem.style.transform = `translate3d(${offset}px, 0, 0)`;
+      this.sliderInnerWrapper.style.transform = `translate3d(${offset}px, 0, 0)`;
     }
 
     if (this.config.useCssFile && this.config.activeClass) {
@@ -508,6 +546,7 @@ export default class Expand {
       this.paginationUpdate();
     }
   }
+
 
   /**
    * small method to react on stopping with dragging
@@ -878,7 +917,7 @@ export default class Expand {
 
       this.drag.endXAxis = e.pageX;
       this.selector.style.cursor = '-webkit-grabbing';
-      this.slideItem.style.transition = `all 0ms ${this.config.easeMode}`;
+      this.sliderInnerWrapper.style.transition = `all 0ms ${this.config.easeMode}`;
 
       const curSlide = this.config.loop ? this.curSlide + this.visibleSlides : this.curSlide;
       const currentOffset = curSlide * (this.selectorWidth / this.visibleSlides);
@@ -886,7 +925,7 @@ export default class Expand {
       const offset = this.config.rtl
         ? currentOffset + dragOffset + (this.config.gap ? this.config.gap : 0)
         : currentOffset - dragOffset - (this.config.gap ? this.config.gap : 0);
-      this.slideItem.style.transform = `translate3d(${(this.config.rtl ? 1 : -1) * offset}px, 0, 0)`;
+      this.sliderInnerWrapper.style.transform = `translate3d(${(this.config.rtl ? 1 : -1) * offset}px, 0, 0)`;
     }
   }
 
@@ -958,8 +997,8 @@ export default class Expand {
       e.preventDefault();
 
       this.drag.endXAxis = e.touches[0].pageX;
-      this.slideItem.style.transition = `0 all ${this.config.easeMode} `;
-      this.slideItem.style.transform = `translate3d(${(this.config.rtl ? 1 : -1) * offset}px, 0, 0)`;
+      this.sliderInnerWrapper.style.transition = `0 all ${this.config.easeMode} `;
+      this.sliderInnerWrapper.style.transform = `translate3d(${(this.config.rtl ? 1 : -1) * offset}px, 0, 0)`;
     }
   }
 
