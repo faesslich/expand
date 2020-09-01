@@ -3,7 +3,7 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const UnminifiedWebpackPlugin = require('unminified-webpack-plugin');
 
 module.exports = {
-  entry: ['./src/expand.js', './src/expand.scss'],
+  entry: ['./src/export.expand.js', './src/expand.scss'],
   output: {
     path: path.join(__dirname, 'dist'),
     filename: 'expand.min.js',
