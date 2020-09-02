@@ -1,11 +1,11 @@
 {
   "name": "@faesslich/expand",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "description": "Expand - the lightweight pure JS carousel/slider",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
   },
-  "main": "dist/expand.min.js",
+  "main": "index.js",
   "devDependencies": {
     "@babel/core": "^7.10.2",
     "@babel/plugin-transform-runtime": "^7.10.1",
