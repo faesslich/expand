@@ -1,138 +1,32 @@
-(function webpackUniversalModuleDefinition(root, factory) {
-	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory();
-	else if(typeof define === 'function' && define.amd)
-		define("Expand", [], factory);
-	else if(typeof exports === 'object')
-		exports["Expand"] = factory();
-	else
-		root["Expand"] = factory();
-})(window, function() {
-return /******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// define __esModule on exports
-/******/ 	__webpack_require__.r = function(exports) {
-/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 		}
-/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 	};
-/******/
-/******/ 	// create a fake namespace object
-/******/ 	// mode & 1: value is a module id, require it
-/******/ 	// mode & 2: merge all properties of value into the ns
-/******/ 	// mode & 4: return value when already ns object
-/******/ 	// mode & 8|1: behave like require
-/******/ 	__webpack_require__.t = function(value, mode) {
-/******/ 		if(mode & 1) value = __webpack_require__(value);
-/******/ 		if(mode & 8) return value;
-/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
-/******/ 		var ns = Object.create(null);
-/******/ 		__webpack_require__.r(ns);
-/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
-/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
-/******/ 		return ns;
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__webpack_require__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "/assets";
-/******/
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
-/******/ })
-/************************************************************************/
-/******/ ([
-/* 0 */
-/***/ (function(module, exports, __webpack_require__) {
+var Expand;
+/******/ (() => { // webpackBootstrap
+/******/ 	var __webpack_modules__ = ({
 
-__webpack_require__(2);
-module.exports = __webpack_require__(1);
+/***/ 837:
+/***/ ((module, exports) => {
 
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 
-/***/ }),
-/* 1 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = (__webpack_require__.p + "expand.min.css");
-
-/***/ }),
-/* 2 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-// ESM COMPAT FLAG
-__webpack_require__.r(__webpack_exports__);
-
-// CONCATENATED MODULE: ./src/expand.js
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
+/**
+ * ExpandJS
+ *
+ * @author Fabian Esser <post@faesslich.de>
+ * @github https://github.com/faesslich/expand
+ * @description Expand - the lightweight pure JS carousel/slider
+ * @version 0.9.0
+ */
 var Expand = /*#__PURE__*/function () {
   /**
    * Constructor
@@ -150,7 +44,7 @@ var Expand = /*#__PURE__*/function () {
 
     this.selectorWidth = this.selector.offsetWidth;
     this.innerItems = [].slice.call(this.selector.children);
-    this.curSlide = this.config.loop ? this.config.startIndex % this.innerItems.length : Math.max(0, Math.min(this.config.startIndex, this.innerItems.length - this.visibleSlides)); // Event handler binding
+    this.curSlide = this.config.loop ? this.config.startIndex % this.innerItems.length : Math.max(0, Math.min(this.config.startIndex, this.innerItems.length - this.visibleSlides)) || 0; // Event handler binding
 
     eventHandlers.forEach(function (method) {
       _this[method] = _this[method].bind(_this);
@@ -163,27 +57,27 @@ var Expand = /*#__PURE__*/function () {
    * @param options
    * @param dataOptions
    * @returns {
-     * {
-       * useCssFile: boolean, centerModeRange: boolean, prevArrowInner: string, nextArrowInner: string, arrows: boolean,
-       * autoplayDuration: number, prevArrowClass: string, duration: number, startIndex: number, nextArrowClass: string,
-       * multipleDrag: boolean, draggable: boolean, activeClass: boolean, onInit: function(), loop: boolean,
-       * gap: number, selector: string, visibleSlides: number, slidesToSlide: number, keyboard: boolean,
-       * onChange: function(), cssCustomPath: string, triggerDistance: number, centerMode: boolean,
-       * itemSelector: string, rtl: boolean, autoplay: boolean, easeMode: string, arrowsVisible: boolean,
-       * pagination: boolean, paginationVisible: boolean, paginationType: string, paginationContainer: string,
-       * paginationItemSelector: string, paginationItemActiveClass: string
-     * }
+   * {
+   * useCssFile: boolean, centerModeRange: boolean, prevArrowInner: string, nextArrowInner: string, arrows: boolean,
+   * autoplayDuration: number, prevArrowClass: string, duration: number, startIndex: number, nextArrowClass: string,
+   * multipleDrag: boolean, draggable: boolean, activeClass: boolean, onInit: function(), loop: boolean,
+   * gap: number, selector: string, visibleSlides: number, slidesToSlide: number, keyboard: boolean,
+   * onChange: function(), cssCustomPath: string, triggerDistance: number, centerMode: boolean,
+   * itemSelector: string, rtl: boolean, autoplay: boolean, easeMode: string, arrowsVisible: boolean,
+   * pagination: boolean, paginationVisible: boolean, paginationType: string, paginationContainer: string,
+   * paginationItemSelector: string, paginationItemActiveClass: string
+   * }
    * }
    */
 
 
   _createClass(Expand, [{
     key: "attachEvents",
-
+    value:
     /**
      * Attaches listeners to required events.
      */
-    value: function attachEvents() {
+    function attachEvents() {
       // If element is draggable / swipeable
       if (this.config.draggable) {
         this.pointerDown = false;
@@ -378,7 +272,7 @@ var Expand = /*#__PURE__*/function () {
       return Number(widthItem * itemWidthCalc);
     }
     /**
-     * Slider item creation
+     * Expand Slider item creation
      * @param item
      * @returns {*}
      */
@@ -1189,7 +1083,7 @@ var Expand = /*#__PURE__*/function () {
         startIndex: 0,
         draggable: true,
         multipleDrag: true,
-        triggerDistance: 20,
+        triggerDistance: 100,
         loop: true,
         rtl: false,
         duration: 500,
@@ -1224,17 +1118,68 @@ var Expand = /*#__PURE__*/function () {
   return Expand;
 }();
 
+window.Expand = Expand;
+exports["default"] = Expand;
+module.exports = exports["default"];
 
-// CONCATENATED MODULE: ./src/export.expand.js
-/* eslint-disable */
+/***/ }),
 
-/**
- * default usage
- * @type {Expand}
- */
+/***/ 835:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-new Expand();
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
 
 /***/ })
-/******/ ]);
-});
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	__webpack_require__(837);
+/******/ 	var __webpack_exports__ = __webpack_require__(835);
+/******/ 	Expand = __webpack_exports__;
+/******/ 	
+/******/ })()
+;

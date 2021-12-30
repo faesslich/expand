@@ -1,4 +1,12 @@
-export default class Expand {
+/**
+ * ExpandJS
+ *
+ * @author Fabian Esser <post@faesslich.de>
+ * @github https://github.com/faesslich/expand
+ * @description Expand - the lightweight pure JS carousel/slider
+ * @version 0.9.0
+ */
+class Expand {
   /**
    * Constructor
    * @param options
@@ -27,7 +35,7 @@ export default class Expand {
     this.innerItems = [].slice.call(this.selector.children);
     this.curSlide = (this.config.loop)
       ? this.config.startIndex % this.innerItems.length
-      : Math.max(0, Math.min(this.config.startIndex, this.innerItems.length - this.visibleSlides));
+      : Math.max(0, Math.min(this.config.startIndex, this.innerItems.length - this.visibleSlides)) || 0;
 
     // Event handler binding
     eventHandlers.forEach(method => {
@@ -43,16 +51,16 @@ export default class Expand {
    * @param options
    * @param dataOptions
    * @returns {
-     * {
-       * useCssFile: boolean, centerModeRange: boolean, prevArrowInner: string, nextArrowInner: string, arrows: boolean,
-       * autoplayDuration: number, prevArrowClass: string, duration: number, startIndex: number, nextArrowClass: string,
-       * multipleDrag: boolean, draggable: boolean, activeClass: boolean, onInit: function(), loop: boolean,
-       * gap: number, selector: string, visibleSlides: number, slidesToSlide: number, keyboard: boolean,
-       * onChange: function(), cssCustomPath: string, triggerDistance: number, centerMode: boolean,
-       * itemSelector: string, rtl: boolean, autoplay: boolean, easeMode: string, arrowsVisible: boolean,
-       * pagination: boolean, paginationVisible: boolean, paginationType: string, paginationContainer: string,
-       * paginationItemSelector: string, paginationItemActiveClass: string
-     * }
+   * {
+   * useCssFile: boolean, centerModeRange: boolean, prevArrowInner: string, nextArrowInner: string, arrows: boolean,
+   * autoplayDuration: number, prevArrowClass: string, duration: number, startIndex: number, nextArrowClass: string,
+   * multipleDrag: boolean, draggable: boolean, activeClass: boolean, onInit: function(), loop: boolean,
+   * gap: number, selector: string, visibleSlides: number, slidesToSlide: number, keyboard: boolean,
+   * onChange: function(), cssCustomPath: string, triggerDistance: number, centerMode: boolean,
+   * itemSelector: string, rtl: boolean, autoplay: boolean, easeMode: string, arrowsVisible: boolean,
+   * pagination: boolean, paginationVisible: boolean, paginationType: string, paginationContainer: string,
+   * paginationItemSelector: string, paginationItemActiveClass: string
+   * }
    * }
    */
   static settingsOverride(options, dataOptions) {
@@ -65,7 +73,7 @@ export default class Expand {
       startIndex: 0,
       draggable: true,
       multipleDrag: true,
-      triggerDistance: 20,
+      triggerDistance: 100,
       loop: true,
       rtl: false,
       duration: 500,
@@ -281,7 +289,7 @@ export default class Expand {
 
 
   /**
-   * Slider item creation
+   * Expand Slider item creation
    * @param item
    * @returns {*}
    */
@@ -353,7 +361,7 @@ export default class Expand {
         const cloneIndexOffset = this.visibleSlides;
         const newPos = cloneIndex + cloneIndexOffset;
         const offset = (this.config.rtl ? 1 : -1) * newPos * (this.selectorWidth / this.visibleSlides)
-          + (this.config.gap ? this.config.gap : 0);
+            + (this.config.gap ? this.config.gap : 0);
         const dragDistance = this.config.draggable ? this.drag.endXAxis - this.drag.startXAxis : 0;
 
         this.isNotTransition();
@@ -403,7 +411,7 @@ export default class Expand {
         const cloneIndexOffset = this.visibleSlides;
         const newPos = cloneIndex + cloneIndexOffset;
         const offset = (this.config.rtl ? 1 : -1) * newPos * (this.selectorWidth / this.visibleSlides)
-          + (this.config.gap ? this.config.gap : 0);
+            + (this.config.gap ? this.config.gap : 0);
         const dragDistance = this.config.draggable ? this.drag.endXAxis - this.drag.startXAxis : 0;
 
         this.sliderInnerWrapper.style.transform = `translate3d(${offset + dragDistance}px, 0, 0)`;
@@ -469,7 +477,7 @@ export default class Expand {
   slideToCurrent(isTransition) {
     const curSlide = this.config.loop ? this.curSlide + this.visibleSlides : this.curSlide;
     const offset = (this.config.rtl ? 1 : -1) * curSlide * (this.selectorWidth / this.visibleSlides)
-      + (this.config.gap ? this.config.gap : 0);
+        + (this.config.gap ? this.config.gap : 0);
 
     if (isTransition) {
       requestAnimationFrame(() => {
@@ -504,13 +512,13 @@ export default class Expand {
 
     const slideToNegativeClone = movement > 0 && this.curSlide - slideableSlides < 0;
     const slideToPositiveClone = movement < 0
-      && (this.curSlide + slideableSlides) > (this.innerItems.length - this.visibleSlides);
+        && (this.curSlide + slideableSlides) > (this.innerItems.length - this.visibleSlides);
 
     if (movement > 0 && moveDistance > this.config.triggerDistance
-      && this.innerItems.length > this.visibleSlides) {
+        && this.innerItems.length > this.visibleSlides) {
       this.prevSlide(slideableSlides);
     } else if (movement < 0 && moveDistance > this.config.triggerDistance
-      && this.innerItems.length > this.visibleSlides) {
+        && this.innerItems.length > this.visibleSlides) {
       this.nextSlide(slideableSlides);
     }
 
@@ -983,7 +991,7 @@ export default class Expand {
 
     if (this.drag.dragOff === null) {
       this.drag.dragOff = Math.abs(this.drag.startYAxis - e.touches[0].pageY)
-        < Math.abs(this.drag.startXAxis - e.touches[0].pageX);
+          < Math.abs(this.drag.startXAxis - e.touches[0].pageX);
     }
 
     if (this.pointerDown && this.drag.dragOff) {
@@ -1034,3 +1042,6 @@ export default class Expand {
   }
 
 }
+window.Expand = Expand;
+exports.default = Expand;
+module.exports = exports.default;
