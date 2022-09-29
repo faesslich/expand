@@ -2,7 +2,7 @@ var Expand;
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 837:
+/***/ 201:
 /***/ ((module, exports) => {
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
@@ -25,7 +25,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
  * @author Fabian Esser <post@faesslich.de>
  * @github https://github.com/faesslich/expand
  * @description Expand - the lightweight pure JS carousel/slider
- * @version 0.9.0
+ * @version 1.0.0
  */
 var Expand = /*#__PURE__*/function () {
   /**
@@ -126,13 +126,17 @@ var Expand = /*#__PURE__*/function () {
   }, {
     key: "init",
     value: function init() {
+      var _this2 = this;
+
       this.attachEvents();
       this.selector.classList.add('expand-outer'); // Build container and slide to current item
 
       this.sliderContainerCreate(); // trigger autoplay if enabled
 
       if (this.config.autoplay) {
-        this.autoPlay();
+        this.myTimer = setInterval(function () {
+          return _this2.nextSlide();
+        }, this.config.autoplayDuration);
       } // add arrows to slider
 
 
@@ -308,7 +312,7 @@ var Expand = /*#__PURE__*/function () {
   }, {
     key: "slidesAmount",
     value: function slidesAmount() {
-      var _this2 = this;
+      var _this3 = this;
 
       if (typeof this.config.visibleSlides === 'number') {
         this.visibleSlides = this.config.visibleSlides;
@@ -316,7 +320,7 @@ var Expand = /*#__PURE__*/function () {
         this.visibleSlides = 1;
         Object.keys(this.config.visibleSlides).forEach(function (key) {
           if (window.innerWidth >= Number(key)) {
-            _this2.visibleSlides = _this2.config.visibleSlides[Number(key)];
+            _this3.visibleSlides = _this3.config.visibleSlides[Number(key)];
           }
         });
       }
@@ -381,6 +385,8 @@ var Expand = /*#__PURE__*/function () {
   }, {
     key: "nextSlide",
     value: function nextSlide() {
+      var _this4 = this;
+
       var countSlides = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
       var cb = arguments.length > 1 ? arguments[1] : undefined;
       var delay = arguments.length > 2 ? arguments[2] : undefined;
@@ -419,6 +425,13 @@ var Expand = /*#__PURE__*/function () {
         this.slideToCurrent(this.config.loop);
         this.config.onChange.call(this);
         this.callbackHandler(cb, delay);
+      }
+
+      if (this.config.autoplay) {
+        clearInterval(this.myTimer);
+        this.myTimer = setInterval(function () {
+          return _this4.nextSlide();
+        }, this.config.autoplayDuration);
       }
     }
     /**
@@ -470,7 +483,7 @@ var Expand = /*#__PURE__*/function () {
   }, {
     key: "slideToCurrent",
     value: function slideToCurrent(isTransition) {
-      var _this3 = this;
+      var _this5 = this;
 
       var curSlide = this.config.loop ? this.curSlide + this.visibleSlides : this.curSlide;
       var offset = (this.config.rtl ? 1 : -1) * curSlide * (this.selectorWidth / this.visibleSlides) + (this.config.gap ? this.config.gap : 0);
@@ -478,9 +491,9 @@ var Expand = /*#__PURE__*/function () {
       if (isTransition) {
         requestAnimationFrame(function () {
           requestAnimationFrame(function () {
-            _this3.isTransition();
+            _this5.isTransition();
 
-            _this3.sliderInnerWrapper.style.transform = "translate3d(".concat(offset + _this3.config.gap, "px, 0, 0)");
+            _this5.sliderInnerWrapper.style.transform = "translate3d(".concat(offset + _this5.config.gap, "px, 0, 0)");
           });
         });
       } else {
@@ -632,10 +645,10 @@ var Expand = /*#__PURE__*/function () {
   }, {
     key: "autoPlay",
     value: function autoPlay() {
-      var _this4 = this;
+      var _this6 = this;
 
-      setInterval(function () {
-        return _this4.nextSlide();
+      this.myTimer = setInterval(function () {
+        return _this6.nextSlide();
       }, this.config.autoplayDuration);
     }
     /**
@@ -645,7 +658,7 @@ var Expand = /*#__PURE__*/function () {
   }, {
     key: "paginationInit",
     value: function paginationInit() {
-      var _this5 = this;
+      var _this7 = this;
 
       if (this.paginationVisible === true && this.config.pagination) {
         var availableItems = this.innerItems.length;
@@ -656,26 +669,26 @@ var Expand = /*#__PURE__*/function () {
         this.paginationItemSelector = this.config.paginationItemSelector ? this.config.paginationItemSelector : this.config.paginationContainer + '--item';
 
         var _loop = function _loop(i) {
-          var jumpTo = (i + 1) * visibleSlides - visibleSlides > _this5.innerItems.length ? _this5.innerItems.length : (i + 1) * visibleSlides - visibleSlides;
-          _this5.paginationItem = document.createElement('span');
+          var jumpTo = (i + 1) * visibleSlides - visibleSlides > _this7.innerItems.length ? _this7.innerItems.length : (i + 1) * visibleSlides - visibleSlides;
+          _this7.paginationItem = document.createElement('span');
 
-          _this5.paginationItem.classList.add(_this5.paginationItemSelector);
+          _this7.paginationItem.classList.add(_this7.paginationItemSelector);
 
-          if (_this5.config.paginationType === 'dots') {
-            _this5.paginationItem.classList.add(_this5.paginationItemSelector + '--dots');
+          if (_this7.config.paginationType === 'dots') {
+            _this7.paginationItem.classList.add(_this7.paginationItemSelector + '--dots');
           }
 
-          _this5.paginationItem.dataset.pagination = '' + (i + 1);
+          _this7.paginationItem.dataset.pagination = '' + (i + 1);
 
-          if (_this5.config.paginationType !== 'dots') {
-            _this5.paginationItem.innerHTML = _this5.paginationItem.dataset.pagination;
+          if (_this7.config.paginationType !== 'dots') {
+            _this7.paginationItem.innerHTML = _this7.paginationItem.dataset.pagination;
           }
 
-          _this5.paginationItem.addEventListener('click', function () {
-            return _this5.goToSlide(jumpTo);
+          _this7.paginationItem.addEventListener('click', function () {
+            return _this7.goToSlide(jumpTo);
           });
 
-          _this5.paginationContainer.appendChild(_this5.paginationItem);
+          _this7.paginationContainer.appendChild(_this7.paginationItem);
         };
 
         for (var i = 0; i < paginationCount; i += 1) {
@@ -714,7 +727,7 @@ var Expand = /*#__PURE__*/function () {
   }, {
     key: "paginationVisibility",
     value: function paginationVisibility() {
-      var _this6 = this;
+      var _this8 = this;
 
       if (typeof this.config.paginationVisible === 'boolean') {
         this.paginationVisible = this.config.paginationVisible;
@@ -722,7 +735,7 @@ var Expand = /*#__PURE__*/function () {
         this.paginationVisible = true;
         Object.keys(this.config.paginationVisible).forEach(function (key) {
           if (window.innerWidth >= Number(key)) {
-            _this6.paginationVisible = _this6.config.paginationVisible[Number(key)];
+            _this8.paginationVisible = _this8.config.paginationVisible[Number(key)];
           }
         });
       }
@@ -734,7 +747,7 @@ var Expand = /*#__PURE__*/function () {
   }, {
     key: "arrowsInit",
     value: function arrowsInit() {
-      var _this7 = this;
+      var _this9 = this;
 
       if (this.arrowsVisible === true && this.config.arrows) {
         this.prevSelector = document.createElement('button');
@@ -746,10 +759,10 @@ var Expand = /*#__PURE__*/function () {
         this.nextSelector.innerHTML = this.config.nextArrowInner;
         this.selector.appendChild(this.nextSelector);
         this.prevSelector.addEventListener('click', function () {
-          return _this7.prevSlide();
+          return _this9.prevSlide();
         });
         this.nextSelector.addEventListener('click', function () {
-          return _this7.nextSlide();
+          return _this9.nextSlide();
         });
       }
     }
@@ -761,7 +774,7 @@ var Expand = /*#__PURE__*/function () {
   }, {
     key: "arrowsVisibility",
     value: function arrowsVisibility() {
-      var _this8 = this;
+      var _this10 = this;
 
       if (typeof this.config.arrowsVisible === 'boolean') {
         this.arrowsVisible = this.config.arrowsVisible;
@@ -769,7 +782,7 @@ var Expand = /*#__PURE__*/function () {
         this.arrowsVisible = true;
         Object.keys(this.config.arrowsVisible).forEach(function (key) {
           if (window.innerWidth >= Number(key)) {
-            _this8.arrowsVisible = _this8.config.arrowsVisible[Number(key)];
+            _this10.arrowsVisible = _this10.config.arrowsVisible[Number(key)];
           }
         });
       }
@@ -781,15 +794,15 @@ var Expand = /*#__PURE__*/function () {
   }, {
     key: "keyboardNavigation",
     value: function keyboardNavigation() {
-      var _this9 = this;
+      var _this11 = this;
 
       document.addEventListener('keydown', function (e) {
         if (e.key === 'ArrowLeft') {
-          _this9.prevSlide();
+          _this11.prevSlide();
         }
 
         if (e.key === 'ArrowRight') {
-          _this9.nextSlide();
+          _this11.nextSlide();
         }
       });
     }
@@ -877,11 +890,11 @@ var Expand = /*#__PURE__*/function () {
   }, {
     key: "callbackHandler",
     value: function callbackHandler(callback, delay) {
-      var _this10 = this;
+      var _this12 = this;
 
       if (delay && callback) {
         setTimeout(function () {
-          callback.call(_this10);
+          callback.call(_this12);
         }, delay);
       } else if (!delay && callback) {
         callback.call(this);
@@ -1177,7 +1190,7 @@ __webpack_require__.r(__webpack_exports__);
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	__webpack_require__(837);
+/******/ 	__webpack_require__(201);
 /******/ 	var __webpack_exports__ = __webpack_require__(835);
 /******/ 	Expand = __webpack_exports__;
 /******/ 	

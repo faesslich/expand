@@ -4,7 +4,7 @@
  * @author Fabian Esser <post@faesslich.de>
  * @github https://github.com/faesslich/expand
  * @description Expand - the lightweight pure JS carousel/slider
- * @version 0.9.0
+ * @version 1.0.0
  */
 class Expand {
   /**
@@ -148,7 +148,7 @@ class Expand {
 
     // trigger autoplay if enabled
     if (this.config.autoplay) {
-      this.autoPlay();
+      this.myTimer = setInterval(() => this.nextSlide(), this.config.autoplayDuration);
     }
 
     // add arrows to slider
@@ -428,6 +428,11 @@ class Expand {
       this.config.onChange.call(this);
       this.callbackHandler(cb, delay);
     }
+
+    if (this.config.autoplay) {
+      clearInterval(this.myTimer);
+      this.myTimer = setInterval(() => this.nextSlide(), this.config.autoplayDuration);
+    }
   }
 
 
@@ -634,7 +639,7 @@ class Expand {
    * Autoplay method
    */
   autoPlay() {
-    setInterval(() => this.nextSlide(), this.config.autoplayDuration);
+    this.myTimer = setInterval(() => this.nextSlide(), this.config.autoplayDuration);
   }
 
 

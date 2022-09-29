@@ -1,6 +1,8 @@
 const path = require('path');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const UnminifiedWebpackPlugin = require('unminified-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
 module.exports = {
   mode: 'development',
@@ -16,55 +18,31 @@ module.exports = {
   optimization: {
     minimize: true,
     minimizer: [
-      new UglifyJsPlugin({
-        test: /\.js(\?.*)?$/i,
-        sourceMap: true
-      })
+      new TerserPlugin({
+        parallel: true
+      }),
+      new CssMinimizerPlugin()
     ]
   },
   module: {
     rules: [
       {
-        enforce: 'pre',
-        test: /\.js$/,
-        exclude: /node_modules/,
-        loader: 'eslint-loader'
-      },
-      {
         test: /\.js$/,
         exclude: /(node_modules)/,
-        loader: 'babel-loader',
-        query: {
-          presets: ['@babel/preset-env'],
-          plugins: ['babel-plugin-add-module-exports']
-        }
+        loader: 'babel-loader'
       },
       {
-        test: /\.(sa|sc|c)ss$/,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              name: '[name].min.css'
-            }
-          },
-          {
-            loader: 'extract-loader'
-          },
-          {
-            loader: 'css-loader'
-          },
-          {
-            loader: 'postcss-loader'
-          },
-          {
-            loader: 'sass-loader'
-          }
-        ]
+        test: /.s?css$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader']
       }
     ]
   },
   plugins: [
-    new UnminifiedWebpackPlugin()
+    new UnminifiedWebpackPlugin(),
+    new MiniCssExtractPlugin({
+      filename: 'expand.min.css',
+      chunkFilename: '[id].css'
+    })
   ]
 };
+
