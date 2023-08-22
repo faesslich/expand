@@ -4,112 +4,79 @@
  * @author Fabian Esser <post@faesslich.de>
  * @github https://github.com/faesslich/expand
  * @description Expand - the lightweight pure JS carousel/slider
- * @version 1.0.0
+ * @version 1.1.0
  */
-class Expand {
-  /**
-   * Constructor
-   * @param options
-   * @param dataOptions
-   */
-  constructor(options, dataOptions) {
-    const eventHandlers = [
-      'resizeHandler',
-      'clickHandler',
-      'touchstartHandler',
-      'touchendHandler',
-      'touchmoveHandler',
-      'mousedownHandler',
-      'mouseupHandler',
-      'mouseleaveHandler',
-      'mousemoveHandler'
-    ];
+const DEFAULT_SETTINGS = {
+  selector: '.expand-js-outer',
+  itemSelector: '.expand-js--item',
+  visibleSlides: 1,
+  useCssFile: true,
+  cssCustomPath: '',
+  startIndex: 0,
+  draggable: true,
+  multipleDrag: true,
+  triggerDistance: 100,
+  loop: true,
+  rtl: false,
+  duration: 500,
+  easeMode: 'ease-out',
+  slidesToSlide: 1,
+  activeClass: true,
+  centerMode: false,
+  centerModeRange: false,
+  pagination: false,
+  paginationVisible: true,
+  paginationType: '',
+  paginationContainer: 'expand-pagination',
+  paginationItemSelector: '',
+  paginationItemActiveClass: 'active',
+  autoplay: false,
+  autoplayDuration: 3000,
+  pauseOnHover: false,
+  arrows: false,
+  arrowsVisible: true,
+  prevArrowClass: 'expand-js--prev',
+  nextArrowClass: 'expand-js--next',
+  prevArrowInner: '‹',
+  nextArrowInner: '›',
+  gap: 0,
+  keyboard: false,
+  onInit: () => {},
+  onChange: () => {}
+};
 
-    this.config = Expand.settingsOverride(options, dataOptions);
-    this.selector = (typeof this.config.selector === 'string')
-      ? document.querySelector(this.config.selector)
-      : this.config.selector;
+export default class Expand {
+
+  constructor(options, dataOptions) {
+    this.config = { ...DEFAULT_SETTINGS, ...options, ...dataOptions };
+    const { selector, loop, startIndex, visibleSlides } = this.config;
+    this.selector = (typeof selector === 'string') ? document.querySelector(selector) : selector;
 
     // Create global references
     this.selectorWidth = this.selector.offsetWidth;
-    this.innerItems = [].slice.call(this.selector.children);
-    this.curSlide = (this.config.loop)
-      ? this.config.startIndex % this.innerItems.length
-      : Math.max(0, Math.min(this.config.startIndex, this.innerItems.length - this.visibleSlides)) || 0;
+    this.innerItems = [...this.selector.children];
+    this.curSlide = loop
+        ? startIndex % this.innerItems.length
+        : Math.max(0, Math.min(startIndex, this.innerItems.length - visibleSlides)) || 0;
 
-    // Event handler binding
-    eventHandlers.forEach(method => {
-      this[method] = this[method].bind(this);
-    });
-
+    this.bindAndAttachEventHandlers();
     this.slidesAmount();
     this.init();
+    this.addAriaRoles();
   }
 
-  /**
-   * Overrides default settings with custom ones.
-   * @param options
-   * @param dataOptions
-   * @returns {
-   * {
-   * useCssFile: boolean, centerModeRange: boolean, prevArrowInner: string, nextArrowInner: string, arrows: boolean,
-   * autoplayDuration: number, prevArrowClass: string, duration: number, startIndex: number, nextArrowClass: string,
-   * multipleDrag: boolean, draggable: boolean, activeClass: boolean, onInit: function(), loop: boolean,
-   * gap: number, selector: string, visibleSlides: number, slidesToSlide: number, keyboard: boolean,
-   * onChange: function(), cssCustomPath: string, triggerDistance: number, centerMode: boolean,
-   * itemSelector: string, rtl: boolean, autoplay: boolean, easeMode: string, arrowsVisible: boolean,
-   * pagination: boolean, paginationVisible: boolean, paginationType: string, paginationContainer: string,
-   * paginationItemSelector: string, paginationItemActiveClass: string
-   * }
-   * }
-   */
-  static settingsOverride(options, dataOptions) {
-    const defaults = {
-      selector: '.expand-js-outer',
-      itemSelector: '.expand-js--item',
-      visibleSlides: 1,
-      useCssFile: true,
-      cssCustomPath: '',
-      startIndex: 0,
-      draggable: true,
-      multipleDrag: true,
-      triggerDistance: 100,
-      loop: true,
-      rtl: false,
-      duration: 500,
-      easeMode: 'ease-out',
-      slidesToSlide: 1,
-      activeClass: true,
-      centerMode: false,
-      centerModeRange: false,
-      pagination: false,
-      paginationVisible: true,
-      paginationType: '',
-      paginationContainer: 'expand-pagination',
-      paginationItemSelector: '',
-      paginationItemActiveClass: 'active',
-      autoplay: false,
-      autoplayDuration: 3000,
-      arrows: false,
-      arrowsVisible: true,
-      prevArrowClass: 'expand-js--prev',
-      nextArrowClass: 'expand-js--next',
-      prevArrowInner: '‹',
-      nextArrowInner: '›',
-      gap: 0,
-      keyboard: false,
-      onInit: () => {},
-      onChange: () => {}
-    };
+  bindAndAttachEventHandlers() {
+    const events = ['resize', 'click', 'touchstart', 'touchend', 'touchmove', 'mousedown', 'mouseup', 'mouseleave', 'mousemove'];
 
-    return { ...defaults, ...options, ...dataOptions };
-  }
+    events.forEach(event => {
+      const handlerName = `${event}Handler`;
+      if (this[handlerName]) {
+        this[handlerName] = this[handlerName].bind(this);
+        const targetElement = event === 'resize' ? window : this.selector;
+        targetElement.addEventListener(event, this[handlerName], { passive: false });
+      }
+    });
 
-
-  /**
-   * Attaches listeners to required events.
-   */
-  attachEvents() {
     // If element is draggable / swipeable
     if (this.config.draggable) {
       this.pointerDown = false;
@@ -121,54 +88,37 @@ class Expand {
         dragOff: null,
         preventClick: false
       };
-
-      // add event handlers
-      window.addEventListener('resize', this.resizeHandler, { passive: false });
-      this.selector.addEventListener('click', this.clickHandler, { passive: false });
-      this.selector.addEventListener('touchstart', this.touchstartHandler, { passive: false });
-      this.selector.addEventListener('touchend', this.touchendHandler, { passive: false });
-      this.selector.addEventListener('touchmove', this.touchmoveHandler, { passive: false });
-      this.selector.addEventListener('mousedown', this.mousedownHandler, { passive: false });
-      this.selector.addEventListener('mouseup', this.mouseupHandler, { passive: false });
-      this.selector.addEventListener('mouseleave', this.mouseleaveHandler, { passive: false });
-      this.selector.addEventListener('mousemove', this.mousemoveHandler, { passive: false });
     }
   }
 
-
-  /**
-   * Builds the markup and attaches listeners to required events.
-   */
   init() {
-    this.attachEvents();
+    const { autoplay, pauseOnHover, arrows, keyboard, useCssFile, activeClass, pagination } = this.config;
+
     this.selector.classList.add('expand-outer');
 
-    // Build container and slide to current item
     this.sliderContainerCreate();
-
-    // trigger autoplay if enabled
-    if (this.config.autoplay) {
-      this.myTimer = setInterval(() => this.nextSlide(), this.config.autoplayDuration);
+    if (autoplay) {
+      this.autoPlay();
     }
 
-    // add arrows to slider
-    if (this.config.arrows) {
+    if (autoplay && pauseOnHover) {
+      this.attachHoverListeners();
+    }
+
+    if (arrows) {
       this.arrowsVisibility();
       this.arrowsInit();
     }
 
-    // add keyboard navigation to slider
-    if (this.config.keyboard) {
+    if (keyboard) {
       this.keyboardNavigation();
     }
 
-    // add active classes to slider
-    if (this.config.useCssFile && this.config.activeClass) {
+    if (useCssFile && activeClass) {
       this.activeClass();
     }
 
-    // add pagination to slider
-    if (this.config.pagination) {
+    if (pagination) {
       this.paginationVisibility();
       this.paginationInit();
       this.paginationUpdate();
@@ -177,10 +127,17 @@ class Expand {
     this.config.onInit.call(this);
   }
 
+  addAriaRoles() {
+    this.selector.setAttribute('role', 'region');
+    this.selector.setAttribute('aria-label', 'Slider');
 
-  /**
-   * Build container and slide to current item
-   */
+    const slides = this.selector.querySelectorAll(this.config.itemSelector);
+    slides.forEach(slide => {
+      slide.setAttribute('role', 'group');
+      slide.setAttribute('aria-label', 'Slide');
+    });
+  }
+
   sliderContainerCreate() {
     this.slideItemWrapper = this.createSliderOuterWrapper();
     this.slidesCollection = this.getSlidesCollection();
@@ -196,231 +153,157 @@ class Expand {
     this.slideToCurrent();
   }
 
+  addClassesBasedOnConfig(element, classes) {
+    const { useCssFile, rtl, pagination } = this.config;
 
-  /**
-   * Create frame and apply styling
-   */
+    if (useCssFile) {
+      element.classList.add(...classes);
+
+      if (rtl) {
+        element.classList.add('-rtl');
+      }
+
+      if (pagination) {
+        element.classList.add('-is-pagination');
+      }
+    }
+  }
+
   createSliderInnerWrapper() {
+    const { centerMode, centerModeRange } = this.config;
+
     this.sliderInnerWrapper = document.createElement('div');
     this.sliderInnerWrapper.classList.add('expand-js--container');
-    this.sliderInnerWrapper.style.width = this.getCalculatedItemWidth() + 'px';
+    this.sliderInnerWrapper.style.width = `${this.getCalculatedItemWidth()}px`;
     this.isTransition();
 
-    if (this.config.centerMode) {
+    if (centerMode) {
       this.sliderInnerWrapper.classList.add('-is-center-mode');
 
-      if (this.config.centerModeRange) {
+      if (centerModeRange) {
         this.sliderInnerWrapper.classList.add('-is-center-range');
       }
     }
   }
 
-
-  /**
-   *
-   * @returns {HTMLDivElement}
-   */
   createSliderOuterWrapper() {
     const slideItemWrapper = document.createElement('div');
     slideItemWrapper.classList.add('expand-js');
 
-    // inline css or with classes for more customizability
-    if (this.config.useCssFile) {
-      slideItemWrapper.classList.add('-hidden');
+    this.addClassesBasedOnConfig(slideItemWrapper, ['-hidden']);
 
-      if (this.config.rtl) {
-        slideItemWrapper.classList.add('-rtl');
-      }
-
-      if (this.config.pagination) {
-        slideItemWrapper.classList.add('-is-pagination');
-      }
-
-    } else {
+    if (!this.config.useCssFile) {
       slideItemWrapper.style.overflow = 'hidden';
-      slideItemWrapper.style.direction = this.config.rtl ? 'rtl' : 'ltr'; // rtl or ltr
+      slideItemWrapper.style.direction = this.config.rtl ? 'rtl' : 'ltr';
     }
 
     return slideItemWrapper;
   }
 
-
-  /**
-   * Create a document fragment to put slides into it
-   * @returns {DocumentFragment}
-   */
   getSlidesCollection() {
     const slides = document.createDocumentFragment();
-
-    // Loop through the slides, add styling and add them to document fragment
-    if (this.config.loop) {
-      for (let i = this.innerItems.length - this.visibleSlides; i < this.innerItems.length; i += 1) {
+    const appendClonedItems = (start, end) => {
+      for (let i = start; i < end; i++) {
         const element = this.createSliderItem(this.innerItems[i].cloneNode(true));
         slides.appendChild(element);
       }
+    };
+
+    if (this.config.loop) {
+      appendClonedItems(this.innerItems.length - this.visibleSlides, this.innerItems.length);
     }
 
-    for (let i = 0; i < this.innerItems.length; i += 1) {
-      const element = this.createSliderItem(this.innerItems[i]);
+    this.innerItems.forEach(item => {
+      const element = this.createSliderItem(item);
       slides.appendChild(element);
-    }
+    });
 
     if (this.config.loop) {
-      for (let i = 0; i < this.visibleSlides; i += 1) {
-        const element = this.createSliderItem(this.innerItems[i].cloneNode(true));
-        slides.appendChild(element);
-      }
+      appendClonedItems(0, this.visibleSlides);
     }
 
     return slides;
   }
 
-
-  /**
-   * calculate width for each item
-   * @returns {number}
-   */
   getCalculatedItemWidth() {
     const widthItem = this.selectorWidth / this.visibleSlides;
     const itemWidthCalc = this.config.loop ? (2 * this.visibleSlides) + this.innerItems.length : this.innerItems.length;
 
-    return Number(widthItem * itemWidthCalc);
+    return widthItem * itemWidthCalc;
   }
 
-
-  /**
-   * Expand Slider item creation
-   * @param item
-   * @returns {*}
-   */
   createSliderItem(item) {
+    const { useCssFile, itemSelector, rtl, gap, loop } = this.config;
     const itemContainer = document.createElement('div');
-    if (this.config.useCssFile) {
-      itemContainer.classList.add(this.config.itemSelector.replace('.', ''));
-      if (this.config.rtl) {
+
+    if (useCssFile) {
+      itemContainer.classList.add(itemSelector.replace('.', ''));
+      if (rtl) {
         itemContainer.classList.add('f-right');
       }
     } else {
-      itemContainer.style.cssFloat = this.config.rtl ? 'right' : 'left';
+      itemContainer.style.cssFloat = rtl ? 'right' : 'left';
     }
 
-    if (this.config.gap) {
-      itemContainer.style.width = `calc(${this.config.loop
-        ? 100 / (this.innerItems.length + (this.visibleSlides * 2))
-        : 100 / (this.innerItems.length)}% - ${this.config.gap}px)`;
-    } else {
-      itemContainer.style.width = `${this.config.loop
-        ? 100 / (this.innerItems.length + (this.visibleSlides * 2))
-        : 100 / (this.innerItems.length)}%`;
-    }
+    const baseWidthPercentage = loop ? 100 / (this.innerItems.length + (this.visibleSlides * 2)) : 100 / this.innerItems.length;
+    itemContainer.style.width = gap ? `calc(${baseWidthPercentage}% - ${gap}px)` : `${baseWidthPercentage}%`;
 
     itemContainer.appendChild(item);
     return itemContainer;
   }
 
-
-  /**
-   * sets amount of visible slides based on viewport (fixed number or object value for responsive changes)
-   */
   slidesAmount() {
-    if (typeof this.config.visibleSlides === 'number') {
-      this.visibleSlides = this.config.visibleSlides;
-    } else if (typeof this.config.visibleSlides === 'object') {
-      this.visibleSlides = 1;
-      Object.keys(this.config.visibleSlides).forEach(key => {
-        if (window.innerWidth >= Number(key)) {
-          this.visibleSlides = this.config.visibleSlides[Number(key)];
-        }
-      });
+    const { visibleSlides } = this.config;
+
+    if (typeof visibleSlides === 'number') {
+      this.visibleSlides = visibleSlides;
+      return;
+    }
+
+    if (typeof visibleSlides === 'object') {
+      this.visibleSlides = Object.keys(visibleSlides)
+          .filter(key => window.innerWidth >= Number(key))
+          .sort((a, b) => b - a)
+          .map(key => visibleSlides[key])[0] || 1;
     }
   }
 
 
-  /**
-   * Previous slide
-   * @param countSlides
-   * @param cb
-   * @param delay
-   */
-  prevSlide(countSlides = 1, cb, delay) {
-    // early return when there is nothing to slide
-    if (this.innerItems.length <= this.visibleSlides) {
-      return;
-    }
+  slide(direction = 'next', countSlides = 1, cb, delay) {
+    if (this.innerItems.length <= this.visibleSlides) return;
 
-    if (this.config.slidesToSlide > 1) {
-      countSlides = this.config.slidesToSlide;
-    }
-
+    countSlides = this.config.slidesToSlide > 1 ? this.config.slidesToSlide : countSlides;
     const curSlideCheck = this.curSlide;
 
-    if (this.config.loop) {
-      const isCloneSlide = this.curSlide - countSlides < 0;
-      if (isCloneSlide) {
-        const cloneIndex = this.curSlide + this.innerItems.length;
-        const cloneIndexOffset = this.visibleSlides;
-        const newPos = cloneIndex + cloneIndexOffset;
-        const offset = (this.config.rtl ? 1 : -1) * newPos * (this.selectorWidth / this.visibleSlides)
-            + (this.config.gap ? this.config.gap : 0);
-        const dragDistance = this.config.draggable ? this.drag.endXAxis - this.drag.startXAxis : 0;
+    const calculateCloneIndex = () => {
+      return direction === 'next' ? this.curSlide - this.innerItems.length : this.curSlide + this.innerItems.length;
+    };
 
-        this.isNotTransition();
-        this.sliderInnerWrapper.style.transform = `translate3d(${offset + dragDistance}px, 0, 0)`;
-
-        this.curSlide = cloneIndex - countSlides;
-      } else {
-        this.curSlide -= countSlides;
-      }
-    } else {
-      this.curSlide = Math.max(this.curSlide - countSlides, 0);
-    }
-
-    if (curSlideCheck !== this.curSlide) {
-      this.slideToCurrent(this.config.loop);
-      this.config.onChange.call(this);
-      this.callbackHandler(cb, delay);
-    }
-  }
-
-
-  /**
-   * Next slide
-   * @param countSlides
-   * @param cb
-   * @param delay
-   */
-  nextSlide(countSlides = 1, cb, delay) {
-    // early return when there is nothing to slide
-    if (this.innerItems.length <= this.visibleSlides) {
-      return;
-    }
-
-    if (this.config.slidesToSlide > 1) {
-      countSlides = this.config.slidesToSlide;
-    }
-
-    const curSlideCheck = this.curSlide;
+    const adjustCurSlide = (value) => {
+      this.curSlide = direction === 'next'
+          ? Math.min(this.curSlide + value, this.innerItems.length - this.visibleSlides)
+          : Math.max(this.curSlide - value, 0);
+    };
 
     if (this.config.loop) {
-      const isCloneSlide = (this.curSlide + countSlides) > (this.innerItems.length - this.visibleSlides);
+      const isCloneSlide = direction === 'next'
+          ? (this.curSlide + countSlides) > (this.innerItems.length - this.visibleSlides)
+          : this.curSlide - countSlides < 0;
 
       if (isCloneSlide) {
         this.isNotTransition();
-
-        const cloneIndex = this.curSlide - this.innerItems.length;
-        const cloneIndexOffset = this.visibleSlides;
-        const newPos = cloneIndex + cloneIndexOffset;
+        const cloneIndex = calculateCloneIndex();
+        const newPos = cloneIndex + this.visibleSlides;
         const offset = (this.config.rtl ? 1 : -1) * newPos * (this.selectorWidth / this.visibleSlides)
-            + (this.config.gap ? this.config.gap : 0);
+            + (this.config.gap || 0);
         const dragDistance = this.config.draggable ? this.drag.endXAxis - this.drag.startXAxis : 0;
-
         this.sliderInnerWrapper.style.transform = `translate3d(${offset + dragDistance}px, 0, 0)`;
-        this.curSlide = cloneIndex + countSlides;
+        this.curSlide = direction === 'next' ? cloneIndex + countSlides : cloneIndex - countSlides;
       } else {
-        this.curSlide += countSlides;
+        adjustCurSlide(countSlides);
       }
     } else {
-      this.curSlide = Math.min(this.curSlide + countSlides, this.innerItems.length - this.visibleSlides);
+      adjustCurSlide(countSlides);
     }
 
     if (curSlideCheck !== this.curSlide) {
@@ -429,56 +312,45 @@ class Expand {
       this.callbackHandler(cb, delay);
     }
 
-    if (this.config.autoplay) {
+    if (direction === 'next' && this.config.autoplay) {
       clearInterval(this.myTimer);
-      this.myTimer = setInterval(() => this.nextSlide(), this.config.autoplayDuration);
+      this.autoPlay();
     }
   }
 
-
-  /**
-   * Disable transition on slideItem.
-   */
   isNotTransition() {
     this.sliderInnerWrapper.style.transition = `all 0ms ${this.config.easeMode}`;
   }
 
-
-  /**
-   * Enable transition on slideItem.
-   */
   isTransition() {
     this.sliderInnerWrapper.style.transition = `all ${this.config.duration}ms ${this.config.easeMode}`;
   }
 
-
-  /**
-   * Go to specific slide method
-   * @param index
-   * @param cb
-   * @param delay
-   */
   goToSlide(index, cb, delay) {
+    const { loop, onChange } = this.config;
+
     if (this.innerItems.length <= this.visibleSlides) {
       return;
     }
+
     const curSlideCheck = this.curSlide;
-    this.curSlide = this.config.loop
-      ? index % this.innerItems.length
-      : Math.min(Math.max(index, 0), this.innerItems.length - this.visibleSlides);
+
+    if (index < 0) {
+      this.curSlide = loop ? this.innerItems.length + index : 0;
+    } else if (index > this.innerItems.length - 1) {
+      this.curSlide = loop ? index - this.innerItems.length : this.innerItems.length - 1;
+    } else {
+      this.curSlide = index;
+    }
 
     if (curSlideCheck !== this.curSlide) {
       this.slideToCurrent();
-      this.config.onChange.call(this);
+      onChange.call(this);
       this.callbackHandler(cb, delay);
     }
   }
 
 
-  /**
-   * Jump to active slide
-   * @param isTransition
-   */
   slideToCurrent(isTransition) {
     const curSlide = this.config.loop ? this.curSlide + this.visibleSlides : this.curSlide;
     const offset = (this.config.rtl ? 1 : -1) * curSlide * (this.selectorWidth / this.visibleSlides)
@@ -504,66 +376,63 @@ class Expand {
     }
   }
 
+  callbackHandler(callback, delay) {
+    if (callback) {
+      delay ? setTimeout(() => callback.call(this), delay) : callback.call(this);
+    }
+  }
 
-  /**
-   * Get new position after dragging
-   */
   updateAfterDrag() {
-    const movement = (this.config.rtl ? -1 : 1) * (this.drag.endXAxis - this.drag.startXAxis);
+    const { rtl, multipleDrag, slidesToSlide, triggerDistance } = this.config;
+    if (!this.innerItems) {
+      console.error("this.innerItems is undefined!");
+      return;
+    }
+
+    const movement = (rtl ? -1 : 1) * (this.drag.endXAxis - this.drag.startXAxis);
     const moveDistance = Math.abs(movement);
-    const slideableSlides = this.config.multipleDrag
-      ? Math.ceil(moveDistance / (this.selectorWidth / this.visibleSlides))
-      : this.config.slidesToSlide;
+    const slideableSlides = multipleDrag
+        ? Math.ceil(moveDistance / (this.selectorWidth / this.visibleSlides))
+        : slidesToSlide;
 
     const slideToNegativeClone = movement > 0 && this.curSlide - slideableSlides < 0;
-    const slideToPositiveClone = movement < 0
-        && (this.curSlide + slideableSlides) > (this.innerItems.length - this.visibleSlides);
+    const slideToPositiveClone = movement < 0 && (this.curSlide + slideableSlides) > (this.innerItems.length - this.visibleSlides);
+    const shouldSlide = moveDistance > triggerDistance && this.innerItems.length > this.visibleSlides;
 
-    if (movement > 0 && moveDistance > this.config.triggerDistance
-        && this.innerItems.length > this.visibleSlides) {
-      this.prevSlide(slideableSlides);
-    } else if (movement < 0 && moveDistance > this.config.triggerDistance
-        && this.innerItems.length > this.visibleSlides) {
-      this.nextSlide(slideableSlides);
+    if (shouldSlide) {
+      this.slide(movement > 0 ? 'prev' : 'next', slideableSlides);
     }
 
     this.slideToCurrent(slideToNegativeClone || slideToPositiveClone);
   }
 
-
-  /**
-   * dynamic item sizes for browser scaling
-   */
-  resizeHandler() {
+  resizeHandler = () => {
+    const { arrows, useCssFile, activeClass, pagination } = this.config;
     this.slidesAmount();
+    this.selectorWidth = this.selector.offsetWidth;
 
     if ((this.curSlide + this.visibleSlides) > this.innerItems.length) {
       this.curSlide = this.innerItems.length <= this.visibleSlides ? 0 : this.innerItems.length - this.visibleSlides;
     }
-    this.selectorWidth = this.selector.offsetWidth;
 
     this.sliderContainerCreate();
 
-    if (this.config.arrows) {
+    if (arrows) {
       this.arrowsVisibility();
       this.arrowsInit();
     }
 
-    if (this.config.useCssFile && this.config.activeClass) {
+    if (useCssFile && activeClass) {
       this.activeClass();
     }
 
-    if (this.config.pagination) {
+    if (pagination) {
       this.paginationVisibility();
       this.paginationInit();
       this.paginationUpdate();
     }
   }
 
-
-  /**
-   * small method to react on stopping with dragging
-   */
   stopDragging() {
     this.drag = {
       startXAxis: 0,
@@ -574,220 +443,135 @@ class Expand {
     };
   }
 
-
-  /**
-   * Remove item method
-   * @param index
-   * @param cb
-   * @param delay
-   */
   remove(index, cb, delay) {
-    const lowerIndex = index < this.curSlide;
-    const lastItem = (this.curSlide + this.visibleSlides) - 1 === index;
-
-    if (lowerIndex || lastItem) {
+    if (index < this.curSlide || (this.curSlide + this.visibleSlides) - 1 === index) {
       this.curSlide -= 1;
     }
 
     this.innerItems.splice(index, 1);
 
-    // build a frame and slide to a curSlide
+    // Build a frame and slide to the current slide
     this.sliderContainerCreate();
     this.callbackHandler(cb, delay);
   }
 
-
-  /**
-   * Insert item method
-   * @param item
-   * @param index
-   * @param cb
-   * @param delay
-   */
   insertElem(item, index, cb, delay) {
     this.innerItems.splice(index, 0, item);
     this.sliderContainerCreate();
     this.callbackHandler(cb, delay);
   }
 
-
-  /**
-   * Prepend item method
-   * @param item
-   * @param cb
-   * @param delay
-   */
   prependElem(item, cb, delay) {
     this.insertElem(item, 0);
     this.callbackHandler(cb, delay);
   }
 
-
-  /**
-   * Append item method
-   * @param item
-   * @param cb
-   * @param delay
-   */
   appendElem(item, cb, delay) {
     this.insertElem(item, this.innerItems.length + 1);
     this.callbackHandler(cb, delay);
   }
 
-
-  /**
-   * Autoplay method
-   */
   autoPlay() {
-    this.myTimer = setInterval(() => this.nextSlide(), this.config.autoplayDuration);
+    clearInterval(this.myTimer);
+    this.myTimer = setInterval(() => { this.slide('next'); }, this.config.autoplayDuration);
   }
 
+  determineVisibility(configProperty) {
+    if (typeof configProperty === 'boolean') {
+      return configProperty;
+    }
 
-  /**
-   * init pagination
-   */
+    if (typeof configProperty === 'object') {
+      return Object.keys(configProperty)
+          .sort((a, b) => b - a)
+          .find(key => window.innerWidth >= Number(key)) || true;
+    }
+
+    return false;
+  }
+
   paginationInit() {
-    if (this.paginationVisible === true && this.config.pagination) {
-      const availableItems = this.innerItems.length;
-      const visibleSlides = this.visibleSlides;
-      const paginationCount = Math.ceil(availableItems / visibleSlides);
+    const { pagination, paginationContainer, paginationItemSelector: configPaginationItemSelector, paginationType, paginationItemActiveClass } = this.config;
+
+    if (this.paginationVisible && pagination) {
+      const paginationCount = Math.ceil(this.innerItems.length / this.visibleSlides);
+      const paginationItemSelector = configPaginationItemSelector || `${paginationContainer}--item`;
 
       this.paginationContainer = document.createElement('div');
-      this.paginationContainer.classList.add(this.config.paginationContainer);
+      this.paginationContainer.classList.add(paginationContainer);
 
-      this.paginationItemSelector = (
-        this.config.paginationItemSelector
-          ? this.config.paginationItemSelector
-          : this.config.paginationContainer + '--item'
-      );
+      for (let i = 0; i < paginationCount; i++) {
+        const jumpTo = i * this.visibleSlides;
+        const paginationItem = document.createElement('span');
 
-      for (let i = 0; i < paginationCount; i += 1) {
-        const jumpTo = ((i + 1) * visibleSlides) - visibleSlides > this.innerItems.length
-          ? this.innerItems.length
-          : ((i + 1) * visibleSlides) - visibleSlides;
-
-        this.paginationItem = document.createElement('span');
-        this.paginationItem.classList.add(this.paginationItemSelector);
-        if (this.config.paginationType === 'dots') {
-          this.paginationItem.classList.add(this.paginationItemSelector + '--dots');
+        paginationItem.classList.add(paginationItemSelector);
+        if (paginationType === 'dots') {
+          paginationItem.classList.add(`${paginationItemSelector}--dots`);
         }
+        paginationItem.dataset.pagination = i + 1;
+        paginationItem.innerHTML = paginationType !== 'dots' ? paginationItem.dataset.pagination : '';
+        paginationItem.addEventListener('click', () => this.goToSlide(jumpTo));
 
-        this.paginationItem.dataset.pagination = '' + (i + 1);
-
-        if (this.config.paginationType !== 'dots') {
-          this.paginationItem.innerHTML = this.paginationItem.dataset.pagination;
-        }
-
-        this.paginationItem.addEventListener('click', () => this.goToSlide(jumpTo));
-        this.paginationContainer.appendChild(this.paginationItem);
+        this.paginationContainer.appendChild(paginationItem);
       }
 
       this.selector.appendChild(this.paginationContainer);
     }
   }
 
-
-  /**
-   * update pagination based on current slide
-   */
   paginationUpdate() {
-    if (this.paginationVisible === true && this.config.pagination) {
-      this.paginationItemSelector = (
-        this.config.paginationItemSelector
-          ? this.config.paginationItemSelector
-          : this.config.paginationContainer + '--item'
-      );
+    if (this.paginationVisible && this.config.pagination) {
+      const paginationItemSelector = this.config.paginationItemSelector || `${this.config.paginationContainer}--item`;
+      const paginationItems = this.selector.querySelectorAll(`.${paginationItemSelector}`);
+      const activePaginationItem = Math.floor(this.curSlide / this.visibleSlides) + 1;
 
-      const paginationItems = this.selector.querySelectorAll('.' + this.paginationItemSelector);
-      const getPaginationItem = Math.ceil(this.curSlide / this.visibleSlides) + 1;
-
-      for (let i = 0; i < paginationItems.length; i += 1) {
-        paginationItems[i].classList.remove(this.config.paginationItemActiveClass);
-
-        if (getPaginationItem === Number(paginationItems[i].dataset.pagination)) {
-          paginationItems[i].classList.add(this.config.paginationItemActiveClass);
-        }
-      }
-    }
-  }
-
-
-  /**
-   * sets visibility of pagination based on viewport
-   * (boolean or object value for responsive changes)
-   */
-  paginationVisibility() {
-    if (typeof this.config.paginationVisible === 'boolean') {
-      this.paginationVisible = this.config.paginationVisible;
-    } else if (typeof this.config.paginationVisible === 'object') {
-      this.paginationVisible = true;
-      Object.keys(this.config.paginationVisible).forEach(key => {
-        if (window.innerWidth >= Number(key)) {
-          this.paginationVisible = this.config.paginationVisible[Number(key)];
-        }
+      paginationItems.forEach(item => {
+        item.classList.toggle(this.config.paginationItemActiveClass, Number(item.dataset.pagination) === activePaginationItem);
       });
     }
   }
 
+  paginationVisibility() {
+    this.paginationVisible = this.determineVisibility(this.config.paginationVisible);
+  }
 
-  /**
-   * add arrows
-   */
   arrowsInit() {
-    if (this.arrowsVisible === true && this.config.arrows) {
+    const { arrows, prevArrowClass, prevArrowInner, nextArrowClass, nextArrowInner } = this.config;
+
+    if (this.arrowsVisible && arrows) {
       this.prevSelector = document.createElement('button');
-      this.prevSelector.setAttribute('class', this.config.prevArrowClass);
-      this.prevSelector.innerHTML = this.config.prevArrowInner;
-      this.selector.appendChild(this.prevSelector);
+      this.prevSelector.className = prevArrowClass;
+      this.prevSelector.innerHTML = prevArrowInner;
+      this.prevSelector.addEventListener('click', () => this.slide('prev'));
 
       this.nextSelector = document.createElement('button');
-      this.nextSelector.setAttribute('class', this.config.nextArrowClass);
-      this.nextSelector.innerHTML = this.config.nextArrowInner;
-      this.selector.appendChild(this.nextSelector);
+      this.nextSelector.className = nextArrowClass;
+      this.nextSelector.innerHTML = nextArrowInner;
+      this.nextSelector.addEventListener('click', () => this.slide('next'));
 
-      this.prevSelector.addEventListener('click', () => this.prevSlide());
-      this.nextSelector.addEventListener('click', () => this.nextSlide());
+      this.selector.append(this.prevSelector, this.nextSelector);
     }
   }
 
-
-  /**
-   * sets visibility of arrows based on viewport
-   * (boolean or object value for responsive changes)
-   */
   arrowsVisibility() {
-    if (typeof this.config.arrowsVisible === 'boolean') {
-      this.arrowsVisible = this.config.arrowsVisible;
-    } else if (typeof this.config.arrowsVisible === 'object') {
-      this.arrowsVisible = true;
-      Object.keys(this.config.arrowsVisible).forEach(key => {
-        if (window.innerWidth >= Number(key)) {
-          this.arrowsVisible = this.config.arrowsVisible[Number(key)];
-        }
-      });
+    this.arrowsVisible = this.determineVisibility(this.config.arrowsVisible);
+  }
+
+  keyboardNavigation() {
+    document.addEventListener('keydown', this.handleKeyboardEvent.bind(this));
+  }
+
+  handleKeyboardEvent(e) {
+    if (e.key === 'ArrowLeft') {
+      this.slide('prev');
+    }
+
+    if (e.key === 'ArrowRight') {
+      this.slide('next');
     }
   }
 
 
-  /**
-   * add keyboard navigation
-   */
-  keyboardNavigation() {
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowLeft') {
-        this.prevSlide();
-      }
-
-      if (e.key === 'ArrowRight') {
-        this.nextSlide();
-      }
-    });
-  }
-
-
-  /**
-   * add active class to visible slides
-   */
   activeClass() {
     const curSlide = this.config.loop ? this.curSlide + this.visibleSlides : this.curSlide;
     const classCount = this.visibleSlides;
@@ -809,14 +593,8 @@ class Expand {
         this.centerMode(itemSelector);
       }
     }
-
   }
 
-
-  /**
-   * add center classes to items in the middle of visible slides
-   * @param itemSelector
-   */
   centerMode(itemSelector) {
     const curSlide = this.config.loop ? this.curSlide + this.visibleSlides : this.curSlide;
     const classCount = this.visibleSlides;
@@ -860,26 +638,7 @@ class Expand {
     }
   }
 
-
-  /**
-   * callback handler
-   * @param callback
-   * @param delay
-   */
-  callbackHandler(callback, delay) {
-    if (delay && callback) {
-      setTimeout(()=> { callback.call(this); }, delay);
-    } else if (!delay && callback) {
-      callback.call(this);
-    }
-  }
-
-
-  /**
-   * click event handler
-   * @param e
-   */
-  clickHandler(e) {
+  clickHandler = (e) => {
     // prevent clicking link on dragging
     // (note: if subitems inside slide, you need to set `pointer-events: none` via css.)
     if (this.drag.preventClick) {
@@ -888,11 +647,6 @@ class Expand {
     this.drag.preventClick = false;
   }
 
-
-  /**
-   * mousedown event handler
-   * @param e
-   */
   mousedownHandler(e) {
     e.preventDefault();
     e.stopPropagation();
@@ -900,11 +654,6 @@ class Expand {
     this.drag.startXAxis = e.pageX;
   }
 
-
-  /**
-   * mouseup event handler
-   * @param e
-   */
   mouseupHandler(e) {
     e.stopPropagation();
     this.pointerDown = false;
@@ -916,11 +665,6 @@ class Expand {
     this.stopDragging();
   }
 
-
-  /**
-   * mousemove event handler
-   * @param e
-   */
   mousemoveHandler(e) {
     e.preventDefault();
     if (this.pointerDown) {
@@ -942,11 +686,6 @@ class Expand {
     }
   }
 
-
-  /**
-   * mouseleave event handler
-   * @param e
-   */
   mouseleaveHandler(e) {
     if (this.pointerDown) {
       this.pointerDown = false;
@@ -959,11 +698,6 @@ class Expand {
     }
   }
 
-
-  /**
-   * touchstart event handler
-   * @param e
-   */
   touchstartHandler(e) {
     e.stopPropagation();
     this.drag.startXAxis = e.touches[0].pageX;
@@ -971,11 +705,6 @@ class Expand {
     this.pointerDown = true;
   }
 
-
-  /**
-   * touchend event handler
-   * @param e
-   */
   touchendHandler(e) {
     e.stopPropagation();
     this.pointerDown = false;
@@ -986,11 +715,6 @@ class Expand {
     this.stopDragging();
   }
 
-
-  /**
-   * touchmove event handler
-   * @param e
-   */
   touchmoveHandler(e) {
     e.stopPropagation();
 
@@ -1015,15 +739,18 @@ class Expand {
     }
   }
 
+  attachHoverListeners() {
+    this.selector.addEventListener('mouseenter', () => {
+      clearInterval(this.myTimer);
+    });
 
-  /**
-   * destroy method
-   * @param restore
-   * @param cb
-   * @param delay
-   */
+    this.selector.addEventListener('mouseleave', () => {
+      this.autoPlay();
+    });
+  }
+
+
   destroy(restore = false, cb, delay) {
-    // remove listeners
     window.removeEventListener('resize', this.resizeHandler);
     this.selector.removeEventListener('click', this.clickHandler);
     this.selector.removeEventListener('mouseup', this.mouseupHandler);
@@ -1045,8 +772,4 @@ class Expand {
     }
     this.callbackHandler(cb, delay);
   }
-
 }
-window.Expand = Expand;
-exports.default = Expand;
-module.exports = exports.default;
